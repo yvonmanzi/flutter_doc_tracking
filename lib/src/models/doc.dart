@@ -35,4 +35,6 @@ class Doc extends Equatable {
 
   @override
   List<Object> get props => [id];
+  @override
+  String toString() => 'Doc: $title';
 }
