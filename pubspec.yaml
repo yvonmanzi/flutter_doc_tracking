@@ -32,6 +32,9 @@ dependencies:
   equatable:
   cloud_firestore:
   rxdart:
+  flutter_datetime_picker:
+  flutter_masked_text:
+  intl:
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -24,8 +24,5 @@ class DocFormBloc extends Bloc<DocEvent, DocState> {
         yield DocumentFormSubmissionFailure();
       }
     }
-    if (event is DocumentFormPickDateButtonPressed) {
-      yield DocumentFormPickingDate();
-    }
   }
 }
