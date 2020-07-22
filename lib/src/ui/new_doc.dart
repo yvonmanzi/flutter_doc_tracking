@@ -126,7 +126,6 @@ class _NewDocState extends State<NewDoc> {
   }
 
   _saveForm() {
-    final FormState form = _docFormKey.currentState;
     if (!form.validate())
       _docFormBloc.add(DocumentFormSubmissionFailure(
           error: 'Some data is invalid. please correct'));

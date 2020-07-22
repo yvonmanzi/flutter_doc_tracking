@@ -21,4 +21,8 @@ class DocRepository {
   Future<List<Doc>> getAllDocuments() async {
     return await _docFirestoreClient.getAllDocs();
   }
+
+  Future<void> deleteAll() async {
+    await _docFirestoreClient.deleteAll();
+  }
 }

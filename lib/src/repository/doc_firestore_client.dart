@@ -44,4 +44,14 @@ class DocFirestoreClient {
       return null;
     }
   }
+
+  Future<void> deleteAll() async {
+    try {
+      return await _firestoreInstance.collection('docs').getDocuments().then(
+          (value) => value.documents
+              .map((doc) => deleteDocument(title: doc.data['title'])));
+    } catch (error) {
+      print('an error happened${error.toString()}');
+    }
+  }
 }
