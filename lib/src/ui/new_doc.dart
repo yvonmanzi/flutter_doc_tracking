@@ -34,6 +34,7 @@ class _NewDocState extends State<NewDoc> {
   @override
   void initState() {
     _docFormBloc = BlocProvider.of<DocFormBloc>(context);
+    _docFirestoreBloc = BlocProvider.of<DocFirestoreBloc>(context);
     super.initState();
   }
 
@@ -161,5 +162,12 @@ class _NewDocState extends State<NewDoc> {
   void _showMessage(String message, MaterialColor color) {
     _scaffoldKey.currentState
         .showSnackBar(SnackBar(backgroundColor: color, content: Text(message)));
+  }
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _expiryDateController.dispose();
+    super.dispose();
   }
 }

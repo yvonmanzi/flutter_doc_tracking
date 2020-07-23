@@ -1,7 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
+import 'package:doctracking/src/repository/doc_firestore_client.dart';
+import 'package:doctracking/src/repository/doc_repository.dart';
+import 'package:doctracking/src/ui/doc_list.dart';
 import 'package:doctracking/src/ui/new_doc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(App());
 }
 
@@ -9,7 +16,14 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {'/new_doc': (BuildContext context) => NewDoc()},
+      routes: {
+        '/new_doc': (BuildContext context) => BlocProvider<DocFirestoreBloc>(
+            create: (context) => DocFirestoreBloc(
+                repository: DocRepository(
+                    docFirestoreClient: DocFirestoreClient(
+                        firestoreInstance: Firestore.instance))),
+            child: NewDoc())
+      },
       title: 'doc tracking',
       theme: ThemeData(
         primaryColorBrightness: Brightness.dark,
@@ -25,11 +39,10 @@ class App extends StatelessWidget {
             )
           ],
         ),
+        body: DocList(),
         floatingActionButton: FloatingActionButton(
-          child: IconButton(
-            icon: Icon(Icons.add),
-            onPressed: null,
-          ),
+          child: Icon(Icons.add),
+          tooltip: 'add new doc',
           onPressed: () => Navigator.pushNamed(context, '/new_doc'),
         ),
       ),
