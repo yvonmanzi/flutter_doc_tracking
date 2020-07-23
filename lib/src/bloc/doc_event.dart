@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
 
 abstract class DocEvent extends Equatable {
@@ -11,12 +12,13 @@ abstract class DocEvent extends Equatable {
 class DocumentFormSaveButtonPressed extends DocEvent {
   final String title;
   final String expiration;
+  final GlobalKey<FormState> formKey;
 
   DocumentFormSaveButtonPressed(
-      {@required this.title, @required this.expiration});
+      {@required this.title,
+      @required this.expiration,
+      @required this.formKey});
 
   @override
-  List<Object> get props => [title, expiration];
+  List<Object> get props => [title, expiration, formKey];
 }
-
-class DocumentFormPickDateButtonPressed extends DocEvent {}

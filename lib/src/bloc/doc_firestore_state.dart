@@ -1,3 +1,4 @@
+import 'package:doctracking/src/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -21,4 +22,11 @@ class DocFirestoreFailure extends DocFirestoreState {
   List<Object> get props => [error];
 }
 
-class DocFirestoreSuccess extends DocFirestoreState {}
+class DocFirestoreSuccess extends DocFirestoreState {
+  final List<Doc> list;
+
+  DocFirestoreSuccess({this.list});
+
+  @override
+  List<Object> get props => [list];
+}

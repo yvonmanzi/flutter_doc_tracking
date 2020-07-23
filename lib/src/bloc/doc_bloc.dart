@@ -1,28 +1,32 @@
 import 'package:doctracking/src/bloc/bloc.dart';
-import 'package:doctracking/src/repository/doc_repository.dart';
+import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
+import 'package:doctracking/src/bloc/doc_firestore_event.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:meta/meta.dart';
 
 class DocFormBloc extends Bloc<DocEvent, DocState> {
-  final DocRepository _docRepository;
+  final DocFirestoreBloc _docFirestoreBloc;
   static final DocState _initialState = DocumentFormInitial();
 
-  DocFormBloc(DocRepository docRepository, DocState initialState)
-      : assert(docRepository != null),
-        _docRepository = docRepository,
+  DocFormBloc(
+      {@required DocState initialState,
+      @required DocFirestoreBloc docFirestoreBloc})
+      : assert(docFirestoreBloc != null),
+        _docFirestoreBloc = docFirestoreBloc,
         super(_initialState);
 
   @override
   Stream<DocState> mapEventToState(DocEvent event) async* {
     if (event is DocumentFormSaveButtonPressed) {
       yield DocumentFormSubmissionLoading();
-      try {
-//TODO: first convert our inputs to the right formats. i.e: convert expiration to date instead of string
-        await _docRepository.addDocument(
-            title: event.title, expiration: event.expiration);
-        yield DocumentFormSubmissionSuccess();
-      } catch (_) {
-        yield DocumentFormSubmissionFailure();
-      }
+      final FormState form = event.formKey.currentState;
+      if (form.validate()) {
+        yield DocumentFormSubmissionSuccess(event.title, event.expiration);
+        _docFirestoreBloc.add(
+            DocFirestoreSave(title: event.title, expiryDate: event.expiration));
+      } else
+        DocumentFormSubmissionFailure(error: 'form is invalid');
     }
   }
 }

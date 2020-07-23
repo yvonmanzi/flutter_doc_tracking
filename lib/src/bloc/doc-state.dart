@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:meta/meta.dart';
 
 abstract class DocState extends Equatable {
   const DocState();
@@ -21,4 +21,17 @@ class DocumentFormSubmissionFailure extends DocState {
   List<Object> get props => [];
 }
 
-class DocumentFormSubmissionSuccess extends DocState {}
+class DocumentFormSubmissionSuccess extends DocState {
+  final String title;
+  final String expiryDate;
+
+  DocumentFormSubmissionSuccess(this.title, this.expiryDate);
+
+  @override
+  List<Object> get props => [title, expiryDate];
+
+  @override
+  String toString() {
+    return 'this is $title expiring on $expiryDate';
+  }
+}

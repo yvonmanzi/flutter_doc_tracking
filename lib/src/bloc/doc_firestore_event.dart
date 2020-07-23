@@ -27,4 +27,6 @@ class DocFirestoreDelete extends DocFirestoreEvent {
   List<Object> get props => [title];
 }
 
+class DocFirestoreFetchAll extends DocFirestoreEvent {}
+
 class DocFirestoreDeleteAll extends DocFirestoreEvent {}
