@@ -33,6 +33,9 @@ dependencies:
   cloud_firestore:
   rxdart:
   flutter_datetime_picker:
+    git:
+      url: https://github.com/ditheshthegreat/flutter_datetime_picker # Repo
+      ref: patch-1 # Branch name
   flutter_masked_text:
   intl:
 

@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:doctracking/src/bloc/bloc.dart';
 import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
 import 'package:doctracking/src/bloc/doc_firestore_event.dart';
-import 'package:doctracking/src/repository/doc_firestore_client.dart';
-import 'package:doctracking/src/repository/doc_repository.dart';
 import 'package:doctracking/src/util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,32 +43,24 @@ class _NewDocState extends State<NewDoc> {
         primarySwatch: Colors.deepPurple,
       ),
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('New Doc'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            tooltip: 'back',
-            //TODO: THIS SHOULD GO THROUGH THE BLOC. CONSULT THEMEING EXAMPLE FROM BLOC DOCUMENTATION
-            onPressed: () {
-              Navigator.pushNamed(context, 'docList');
-              _docFirestoreBloc.add(DocFirestoreFetchAll());
-            },
+          appBar: AppBar(
+            title: Text('New Doc'),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              tooltip: 'back',
+              //TODO: THIS SHOULD GO THROUGH THE BLOC. CONSULT THEMEING EXAMPLE FROM BLOC DOCUMENTATION
+              onPressed: () {
+                Navigator.pushNamed(context, 'docList');
+                _docFirestoreBloc.add(DocFirestoreFetchAll());
+              },
+            ),
           ),
-        ),
-        body: BlocProvider<DocFormBloc>(
-            create: (context) => DocFormBloc(
-                initialState: DocumentFormInitial(),
-                docFirestoreBloc: DocFirestoreBloc(
-                    repository: DocRepository(
-                        docFirestoreClient: DocFirestoreClient(
-                            firestoreInstance: Firestore.instance)))),
-            child: SafeArea(child: _buildDocForm())),
-      ),
+          body: SafeArea(child: _buildDocForm())),
     );
   }
 
   Widget _buildDocForm() {
-    return BlocBuilder(builder: (context, state) {
+    return BlocBuilder<DocFormBloc, DocState>(builder: (context, state) {
       if (state is DocumentFormSubmissionFailure) {
         _showMessage(state.error, Colors.red);
       }
@@ -101,7 +90,8 @@ class _NewDocState extends State<NewDoc> {
               ),
               BlocProvider(
                 create: (BuildContext context) => DatePickerBloc(),
-                child: BlocBuilder(builder: (context, state) {
+                child: BlocBuilder<DatePickerBloc, DatePickerState>(
+                    builder: (context, state) {
                   if (state is DatePickerInitial) _chooseDate(context);
                   if (state is DatePickerDatePickSuccess)
                     _expiryDateController.text = state.expirationDate;
