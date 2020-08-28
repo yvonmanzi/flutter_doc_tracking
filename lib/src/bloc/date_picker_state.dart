@@ -10,6 +10,8 @@ abstract class DatePickerState extends Equatable {
 
 class DatePickerInitial extends DatePickerState {}
 
+class DatePickerButtonNotPressed extends DatePickerState {}
+
 class DatePickerDatePickSuccess extends DatePickerState {
   final String expirationDate;
 

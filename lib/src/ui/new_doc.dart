@@ -8,8 +8,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 
-import 'doc_list.dart';
-
 class NewDoc extends StatefulWidget {
   @override
   _NewDocState createState() => _NewDocState();
@@ -17,7 +15,7 @@ class NewDoc extends StatefulWidget {
 
 class _NewDocState extends State<NewDoc> {
   final _titleController = TextEditingController();
-  final _expiryDateController = MaskedTextController(mask: '2000--00-00');
+  final _expiryDateController = MaskedTextController(mask: '2000-00-00');
 
   final GlobalKey<FormState> _docFormKey = GlobalKey();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
@@ -38,20 +36,19 @@ class _NewDocState extends State<NewDoc> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {'/docList': (BuildContext context) => DocList()},
       theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
       home: Scaffold(
+          key: _scaffoldKey,
           appBar: AppBar(
             title: Text('New Doc'),
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               tooltip: 'back',
-              //TODO: THIS SHOULD GO THROUGH THE BLOC. CONSULT THEMEING EXAMPLE FROM BLOC DOCUMENTATION
               onPressed: () {
-                Navigator.pushNamed(context, 'docList');
                 _docFirestoreBloc.add(DocFirestoreFetchAll());
+                Navigator.pop(context);
               },
             ),
           ),
@@ -62,24 +59,31 @@ class _NewDocState extends State<NewDoc> {
   Widget _buildDocForm() {
     return BlocBuilder<DocFormBloc, DocState>(builder: (context, state) {
       if (state is DocumentFormSubmissionFailure) {
-        _showMessage(state.error, Colors.red);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showMessage(state.error, Colors.red);
+        });
       }
       if (state is DocumentFormSubmissionSuccess) {
-        _showMessage(
-            '${state.toString()} is being uploaded to the web', Colors.green);
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showMessage(
+              '${state.title} is being uploaded to the web', Colors.green);
+        });
       }
       if (state is DocumentFormSubmissionLoading) {
-        _showMessage('loading', Colors.white);
-        return CircularProgressIndicator();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showMessage('loading', Colors.white);
+          return CircularProgressIndicator();
+        });
       }
       return Form(
           autovalidate: true,
+          key: _docFormKey,
           child: ListView(
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             children: <Widget>[
               TextFormField(
                 inputFormatters: [
-                  WhitelistingTextInputFormatter(RegExp("[a-zA-Z0-9]")),
+                  FilteringTextInputFormatter.allow(RegExp("[a-zA-Z0-9]")),
                 ],
                 controller: _titleController,
                 validator: (value) => Validate.validateTitle(value),
@@ -117,11 +121,9 @@ class _NewDocState extends State<NewDoc> {
                         IconButton(
                             icon: Icon(Icons.more_horiz),
                             tooltip: 'pick date',
-                            onPressed: () {
-                              _datePickerBloc =
-                                  BlocProvider.of<DatePickerBloc>(context);
-                              _datePickerBloc.add(DatePickerButtonPressed());
-                            }),
+                            onPressed: () => _datePickerBloc =
+                                BlocProvider.of<DatePickerBloc>(context)
+                                  ..add(DatePickerButtonPressed())),
                       ]);
                 }),
               ),
@@ -140,16 +142,20 @@ class _NewDocState extends State<NewDoc> {
     });
   }
 
-  _chooseDate(BuildContext context) {
+  _chooseDate(BuildContext context) async {
+    debugPrint("Picker is pressed");
     var now = DateTime.now();
-    DatePicker.showDatePicker(context, showTitleActions: true,
-        onConfirm: (date) {
-      _datePickerBloc.add(DatePickerDoneButtonPressed(
-          expirationDate: DateUtils.ftDateAsStr(date)));
-    }, currentTime: now);
+    debugPrint("$now");
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      DatePicker.showDatePicker(context, showTitleActions: true,
+          onConfirm: (date) {
+        _datePickerBloc.add(DatePickerDoneButtonPressed(
+            expirationDate: DateUtils.ftDateAsStr(date)));
+      }, currentTime: now);
+    });
   }
 
-  void _showMessage(String message, MaterialColor color) {
+  void _showMessage(String message, Color color) {
     _scaffoldKey.currentState
         .showSnackBar(SnackBar(backgroundColor: color, content: Text(message)));
   }
