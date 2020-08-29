@@ -10,7 +10,7 @@ class DocFirestoreClient {
       : assert(firestoreInstance != null),
         _firestoreInstance = firestoreInstance;
 
-  Future<void> addDocument(
+  Future<String> addDocument(
       {int id, @required String title, @required String expiration}) async {
     final data = {'title': title, 'expiration': expiration};
     try {
@@ -18,19 +18,21 @@ class DocFirestoreClient {
           .collection('docs')
           .document('${title.toLowerCase()}')
           .setData(data);
+      return title;
     } catch (_) {
-      print('adding a doc not working!');
+      return ('adding a doc not working!');
     }
   }
 
-  Future<void> deleteDocument({@required String title}) async {
+  Future<String> deleteDocument({@required String title}) async {
     try {
       await _firestoreInstance
           .collection('docs')
           .document('${title.toLowerCase()}')
           .delete();
+      return title;
     } catch (_) {
-      print("cant delete for some reason");
+      return ("cant delete for some reason");
     }
   }
 

@@ -11,7 +11,7 @@ class Doc extends Equatable {
   Doc(
       {@required this.title,
       @required this.expiration,
-      @required this.id,
+      this.id,
       @required this.remainingMonths})
       : assert(title != null && expiration != null && remainingMonths != null);
 
@@ -35,6 +35,7 @@ class Doc extends Equatable {
 
   @override
   List<Object> get props => [id];
+
   @override
   String toString() => 'Doc: $title';
 }
