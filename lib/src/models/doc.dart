@@ -12,15 +12,15 @@ class Doc extends Equatable {
       {@required this.title,
       @required this.expiration,
       this.id,
-      @required this.remainingMonths})
-      : assert(title != null && expiration != null && remainingMonths != null);
+      this.remainingMonths})
+      : assert(title != null && expiration != null);
 
   Map<String, dynamic> toMap() {
     final map = Map<String, dynamic>();
-    map['title'] = this.title;
-    if (id != null) map['id'] = this.id;
-    map['expiration'] = this.expiration;
-    map['remainingMonths'] = this.remainingMonths;
+    map['title'] = title;
+    if (id != null) map['id'] = id;
+    map['expiration'] = expiration;
+    if (remainingMonths != null) map['remainingMonths'] = remainingMonths;
     return map;
   }
 

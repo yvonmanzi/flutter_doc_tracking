@@ -3,30 +3,28 @@ import 'package:doctracking/src/bloc/bloc.dart';
 import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
 import 'package:doctracking/src/repository/doc_firestore_client.dart';
 import 'package:doctracking/src/repository/doc_repository.dart';
-import 'package:doctracking/src/ui/doc_list.dart';
+import 'package:doctracking/src/ui/app.dart';
 import 'package:doctracking/src/ui/new_doc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  final firestoreInstance = Firestore.instance;
+  final docFirestoreClient =
+      DocFirestoreClient(firestoreInstance: firestoreInstance);
+  final repository = DocRepository(docFirestoreClient: docFirestoreClient);
   runApp(MaterialApp(
     routes: {
       '/new_doc': (BuildContext context) => MultiBlocProvider(providers: [
             BlocProvider<DocFirestoreBloc>(
-                create: (context) => DocFirestoreBloc(
-                    repository: DocRepository(
-                        docFirestoreClient: DocFirestoreClient(
-                            firestoreInstance: Firestore.instance)))),
+                create: (context) => DocFirestoreBloc(repository: repository)),
             BlocProvider<DocFormBloc>(
-              create: (context) => DocFormBloc(
-                  initialState: DocumentFormInitial(),
-                  docFirestoreBloc: DocFirestoreBloc(
-                    repository: DocRepository(
-                        docFirestoreClient: DocFirestoreClient(
-                            firestoreInstance: Firestore.instance)),
-                  )),
-            ),
+                create: (context) => DocFormBloc(
+                      initialState: DocumentFormInitial(),
+                      docFirestoreBloc:
+                          DocFirestoreBloc(repository: repository),
+                    )),
           ], child: NewDoc()),
     },
     title: 'doc tracking',
@@ -35,36 +33,6 @@ void main() {
       primarySwatch: Colors.deepOrange,
       secondaryHeaderColor: Colors.deepOrange,
     ),
-    home: App(),
+    home: App(docRepository: repository),
   ));
-}
-
-class App extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      //resizeToAvoidBottomInset: false,
-      appBar: AppBar(
-        title: Text('DocExpire'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: null,
-          )
-        ],
-      ),
-      body: BlocProvider<DocFirestoreBloc>(
-        create: (context) => DocFirestoreBloc(
-            repository: DocRepository(
-                docFirestoreClient:
-                    DocFirestoreClient(firestoreInstance: Firestore.instance))),
-        child: DocList(),
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        tooltip: 'add new doc',
-        onPressed: () => Navigator.pushNamed(context, '/new_doc'),
-      ),
-    );
-  }
 }

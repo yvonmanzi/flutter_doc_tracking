@@ -38,11 +38,15 @@ class DocFirestoreClient {
 
   Future<List<Doc>> getAllDocs() async {
     try {
-      return await _firestoreInstance.collection('docs').getDocuments().then(
-          (QuerySnapshot snapshot) =>
+      List<Doc> list = await _firestoreInstance
+          .collection('docs')
+          .getDocuments()
+          .then((QuerySnapshot snapshot) =>
               snapshot.documents.map((doc) => Doc.fromMap(doc.data)).toList());
-    } catch (_) {
-      print('could not get the docs');
+      print('we did it: ${list.length}');
+      return list;
+    } catch (error) {
+      print('could not get the docs, ${error.toString()} happened');
       return null;
     }
   }
