@@ -1,6 +1,5 @@
 import 'package:doctracking/src/bloc/bloc.dart';
 import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_event.dart';
 import 'package:doctracking/src/util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -47,7 +46,6 @@ class _NewDocState extends State<NewDoc> {
               icon: Icon(Icons.arrow_back),
               tooltip: 'back',
               onPressed: () {
-                _docFirestoreBloc.add(DocFirestoreFetchAll());
                 Navigator.pop(context);
               },
             ),

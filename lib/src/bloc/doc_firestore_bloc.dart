@@ -42,6 +42,7 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
     }
     if (event is DocFirestoreFetchAll) {
       try {
+        yield DocFirestoreLoading();
         final list = await _repository.getAllDocuments();
         yield DocFirestoreSuccess(list: list);
       } catch (error) {

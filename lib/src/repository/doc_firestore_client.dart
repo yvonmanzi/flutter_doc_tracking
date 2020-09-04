@@ -43,7 +43,7 @@ class DocFirestoreClient {
           .getDocuments()
           .then((QuerySnapshot snapshot) =>
               snapshot.documents.map((doc) => Doc.fromMap(doc.data)).toList());
-      print('we did it: ${list.length}');
+      print('we did it: ${list.length}, ${list[0].expiration}');
       return list;
     } catch (error) {
       print('could not get the docs, ${error.toString()} happened');
