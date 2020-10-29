@@ -7,6 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'doc_list.dart';
 
 const menuReset = "Delete all documents";
+// Storing options in a list so we can add more later
 List<String> menuOptions = const <String>[menuReset];
 
 class App extends StatefulWidget {
