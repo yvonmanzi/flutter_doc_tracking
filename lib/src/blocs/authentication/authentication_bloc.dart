@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:doctracking/src/bloc/authentication/authentication_state.dart';
+import 'package:doctracking/src/blocs/authentication/authentication_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 

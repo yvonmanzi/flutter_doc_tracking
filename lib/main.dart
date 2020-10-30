@@ -1,54 +1,50 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctracking/src/bloc/authentication/authentication.dart';
-import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
-import 'package:doctracking/src/repository/doc_repo/doc_firestore_client.dart';
-import 'package:doctracking/src/repository/doc_repo/doc_repository.dart';
-import 'package:doctracking/src/ui/app.dart';
-import 'package:doctracking/src/ui/new_doc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import './src/bloc/doc_form/doc_form.dart';
+import './src/blocs/authentication/authentication.dart';
+import './src/blocs/doc_firestore/doc_firestore.dart';
+import './src/blocs/doc_form/doc_form.dart';
+import './src/blocs/login/ui/login_screen.dart';
+import './src/repository/doc_repo/doc_repository.dart';
 import './src/repository/user_repo/user_repository.dart';
+import './src/ui/app.dart';
+import './src/ui/new_doc.dart';
+import './src/ui/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final firestoreInstance = Firestore.instance;
-  final docFirestoreClient =
-      DocFirestoreClient(firestoreInstance: firestoreInstance);
-  final docRepository = DocRepository(docFirestoreClient: docFirestoreClient);
+  final docRepository = DocRepository();
   final userRepository = UserRepository();
-  runApp(MultiBlocProvider(
-    providers: [
-      BlocProvider<AuthenticationBloc>(
-        create: (context) => AuthenticationBloc(userRepository: userRepository),
-      ),
-      BlocProvider<DocFirestoreBloc>(
-        create: (context) => DocFirestoreBloc(repository: docRepository),
-      )
-    ],
+
+  runApp(BlocProvider<AuthenticationBloc>(
+    // Create the bloc and instantly add an event(AuthenticationAppStarted)
+    create: (context) => AuthenticationBloc(userRepository: userRepository)
+      ..add(AuthenticationAppStarted()),
     child: MaterialApp(
-      routes: {
-        // Send two blocks down the new_doc widget
-        '/new_doc': (BuildContext context) => MultiBlocProvider(providers: [
-              BlocProvider<DocFirestoreBloc>(
-                  create: (context) =>
+        routes: {
+          '/new_doc': (BuildContext context) => BlocProvider<DocFormBloc>(
+              create: (context) => DocFormBloc(
+                  docFirestoreBloc:
                       DocFirestoreBloc(repository: docRepository)),
-              BlocProvider<DocFormBloc>(
-                  create: (context) => DocFormBloc(
-                        initialState: DocumentFormInitial(),
-                        docFirestoreBloc:
-                            DocFirestoreBloc(repository: docRepository),
-                      )),
-            ], child: NewDoc()),
-      },
-      title: 'doc tracking',
-      theme: ThemeData(
-        primaryColorBrightness: Brightness.dark,
-        primarySwatch: Colors.deepOrange,
-        secondaryHeaderColor: Colors.deepOrange,
-      ),
-      home: App(),
-    ),
+              child: NewDoc()),
+        },
+        title: 'doc tracking',
+        theme: ThemeData(
+          primaryColorBrightness: Brightness.dark,
+          primarySwatch: Colors.deepOrange,
+          secondaryHeaderColor: Colors.deepOrange,
+        ),
+        home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
+          builder: (context, state) {
+            if (state is AuthenticationUninitialized) return SplashScreen();
+            if (state is AuthenticationAuthenticated)
+              return BlocProvider<DocFirestoreBloc>(
+                  create: (context) =>
+                      DocFirestoreBloc(repository: docRepository),
+                  child: App());
+            else
+              return LoginScreen();
+          },
+        )),
   ));
 }

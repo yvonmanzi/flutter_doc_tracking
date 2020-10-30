@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
 
-import '../../src/bloc/date_picker/date_picker.dart';
-import '../../src/bloc/doc_firestore/doc_firestore_bloc.dart';
-import '../../src/bloc/doc_form/doc_form.dart';
+import '../../src/blocs/date_picker/date_picker.dart';
+import '../../src/blocs/doc_form/doc_form.dart';
 import '../../src/util/date_util.dart';
 
 class NewDoc extends StatefulWidget {
@@ -23,14 +22,12 @@ class _NewDocState extends State<NewDoc> {
 
   DatePickerBloc _datePickerBloc;
   DocFormBloc _docFormBloc;
-  DocFirestoreBloc _docFirestoreBloc;
 
   final int daysAhead = 5475;
 
   @override
   void initState() {
     _docFormBloc = BlocProvider.of<DocFormBloc>(context);
-    _docFirestoreBloc = BlocProvider.of<DocFirestoreBloc>(context);
     super.initState();
   }
 

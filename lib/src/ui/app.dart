@@ -1,8 +1,8 @@
-import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
+import 'package:doctracking/src/blocs/doc_firestore/doc_firestore_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../bloc/doc_firestore/doc_firestore.dart';
+import '../blocs/doc_firestore/doc_firestore.dart';
 import 'doc_list.dart';
 
 const menuReset = "Delete all documents";
@@ -15,8 +15,6 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
-  DocFirestoreBloc _docFirestoreBloc;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,9 +67,8 @@ class _AppState extends State<App> {
               FlatButton(
                 child: Text('Ok'),
                 onPressed: () async {
-                  _docFirestoreBloc =
-                      BlocProvider.of<DocFirestoreBloc>(context);
-                  _docFirestoreBloc.add(DocFirestoreDeleteAll());
+                  BlocProvider.of<DocFirestoreBloc>(context)
+                    ..add(DocFirestoreDeleteAll());
                   Navigator.of(context).pop();
                 },
               )

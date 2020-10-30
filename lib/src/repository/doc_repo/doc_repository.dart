@@ -1,13 +1,12 @@
-import 'package:doctracking/src/models/doc.dart';
-import 'package:doctracking/src/repository/doc_repo/doc_firestore_client.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 
-class DocRepository {
-  final DocFirestoreClient _docFirestoreClient;
+import '../../models/doc.dart';
+import '../doc_repo/doc_firestore_client.dart';
 
-  DocRepository({@required DocFirestoreClient docFirestoreClient})
-      : assert(docFirestoreClient != null),
-        _docFirestoreClient = docFirestoreClient;
+class DocRepository {
+  final DocFirestoreClient _docFirestoreClient =
+      DocFirestoreClient(firestoreInstance: Firestore.instance);
 
   Future<void> addDocument({@required String title, String expiration}) async {
     return await _docFirestoreClient.addDocument(

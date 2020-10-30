@@ -1,10 +1,9 @@
-import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
-import 'package:doctracking/src/models/doc.dart';
 import 'package:doctracking/src/util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../src/bloc/doc_firestore/doc_firestore.dart';
+import '../../src/blocs/doc_firestore/doc_firestore.dart';
+import '../../src/models/doc.dart';
 
 class DocList extends StatefulWidget {
   @override
@@ -69,6 +68,9 @@ class _DocListState extends State<DocList> {
 
   @override
   void dispose() {
+    // TODO: It's not clear which widget is responsible for disposing the blocs.
+    // it might be appropriate to do so within the parent widget, the widget creating the bloc.
+    // make this clearer
     _docFirestoreBloc.close();
     super.dispose();
   }
