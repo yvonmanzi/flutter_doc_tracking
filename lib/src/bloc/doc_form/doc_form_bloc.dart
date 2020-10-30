@@ -1,9 +1,10 @@
-import 'package:doctracking/src/bloc/bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_event.dart';
+import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+
+import '../../../src/bloc/doc_firestore/doc_firestore.dart';
+import 'doc_form.dart';
 
 class DocFormBloc extends Bloc<DocEvent, DocState> {
   final DocFirestoreBloc _docFirestoreBloc;

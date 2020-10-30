@@ -1,11 +1,13 @@
-import 'package:doctracking/src/bloc/bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
-import 'package:doctracking/src/util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:flutter_masked_text/flutter_masked_text.dart';
+
+import '../../src/bloc/date_picker/date_picker.dart';
+import '../../src/bloc/doc_firestore/doc_firestore_bloc.dart';
+import '../../src/bloc/doc_form/doc_form.dart';
+import '../../src/util/date_util.dart';
 
 class NewDoc extends StatefulWidget {
   @override

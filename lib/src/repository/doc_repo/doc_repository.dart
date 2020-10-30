@@ -1,5 +1,5 @@
 import 'package:doctracking/src/models/doc.dart';
-import 'package:doctracking/src/repository/doc_firestore_client.dart';
+import 'package:doctracking/src/repository/doc_repo/doc_firestore_client.dart';
 import 'package:meta/meta.dart';
 
 class DocRepository {

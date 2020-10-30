@@ -1,10 +1,10 @@
-import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_event.dart';
-import 'package:doctracking/src/bloc/doc_firestore_state.dart';
+import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
 import 'package:doctracking/src/models/doc.dart';
 import 'package:doctracking/src/util/date_util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../src/bloc/doc_firestore/doc_firestore.dart';
 
 class DocList extends StatefulWidget {
   @override

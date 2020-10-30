@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:meta/meta.dart';
 
-import '../models/models.dart';
+import '../../models/models.dart';
 
 class DocFirestoreClient {
   final Firestore _firestoreInstance;

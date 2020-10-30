@@ -1,8 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:doctracking/src/bloc/authentication/aunthentication_state.dart';
+import 'package:doctracking/src/bloc/authentication/authentication_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../repository/user_repo/user_repository.dart';
 import 'authentication_event.dart';
 
 class AuthenticationBloc
@@ -11,7 +12,8 @@ class AuthenticationBloc
 
   AuthenticationBloc({@required UserRepository userRepository})
       : assert(userRepository != null),
-        _userRepository = userRepository;
+        _userRepository = userRepository,
+        super(AuthenticationUninitialized());
 
   @override
   Stream<AuthenticationState> mapEventToState(

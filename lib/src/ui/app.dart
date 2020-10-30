@@ -1,22 +1,15 @@
-import 'package:doctracking/src/bloc/doc_firestore_bloc.dart';
-import 'package:doctracking/src/bloc/doc_firestore_event.dart';
-import 'package:doctracking/src/repository/doc_repository.dart';
+import 'package:doctracking/src/bloc/doc_firestore/doc_firestore_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../bloc/doc_firestore/doc_firestore.dart';
 import 'doc_list.dart';
 
 const menuReset = "Delete all documents";
-// Storing options in a list so we can add more later
+// Storing options in a list so we can add more options later
 List<String> menuOptions = const <String>[menuReset];
 
 class App extends StatefulWidget {
-  final DocRepository _repository;
-
-  App({@required DocRepository docRepository})
-      : assert(docRepository != null),
-        _repository = docRepository;
-
   @override
   _AppState createState() => _AppState();
 }
@@ -44,10 +37,7 @@ class _AppState extends State<App> {
           ),
         ],
       ),
-      body: BlocProvider<DocFirestoreBloc>(
-        create: (context) => DocFirestoreBloc(repository: widget._repository),
-        child: DocList(),
-      ),
+      body: DocList(),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         tooltip: 'add new doc',
@@ -80,7 +70,7 @@ class _AppState extends State<App> {
                 child: Text('Ok'),
                 onPressed: () async {
                   _docFirestoreBloc =
-                      DocFirestoreBloc(repository: widget._repository);
+                      BlocProvider.of<DocFirestoreBloc>(context);
                   _docFirestoreBloc.add(DocFirestoreDeleteAll());
                   Navigator.of(context).pop();
                 },

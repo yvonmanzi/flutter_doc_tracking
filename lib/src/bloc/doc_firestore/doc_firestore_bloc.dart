@@ -1,8 +1,9 @@
-import 'package:doctracking/src/bloc/doc_firestore_event.dart';
-import 'package:doctracking/src/bloc/doc_firestore_state.dart';
-import 'package:doctracking/src/repository/doc_repository.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
+
+import './doc_firestore_event.dart';
+import './doc_firestore_state.dart';
+import '../../../src/repository/doc_repo/doc_repository.dart';
 
 class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
   final DocRepository _repository;
