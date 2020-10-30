@@ -6,7 +6,7 @@ import './src/blocs/doc_firestore/doc_firestore.dart';
 import './src/blocs/doc_form/doc_form.dart';
 import './src/blocs/login/ui/login_screen.dart';
 import './src/repository/doc_repo/doc_repository.dart';
-import './src/repository/user_repo/user_repository.dart';
+import './src/repository/user_repo/user_cient_repository.dart';
 import './src/ui/app.dart';
 import './src/ui/new_doc.dart';
 import './src/ui/splash_screen.dart';
