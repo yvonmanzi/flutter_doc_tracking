@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../repository/user_repo/user_cient_repository.dart';
+import '../../../repository/user_repo/user_client_repository.dart';
 import '../../authentication/authentication.dart';
 import '../bloc/login.dart';
 import 'create_account_button.dart';
@@ -34,7 +34,7 @@ class _LoginFormState extends State<LoginForm> {
   bool isLoginButtonEnabled(LoginState state) {
     return state.isFormValid &&
         isPopulated &&
-        !state.isSubmitting; // what does it mean 'isSubmitting?"
+        !state.isSubmitting; // what does it mean 'isSubmitting?" clarify this
   }
 
   @override

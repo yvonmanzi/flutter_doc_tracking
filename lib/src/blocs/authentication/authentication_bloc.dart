@@ -3,7 +3,7 @@ import 'package:doctracking/src/blocs/authentication/authentication_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../repository/user_repo/user_cient_repository.dart';
+import '../../repository/user_repo/user_client_repository.dart';
 import 'authentication_event.dart';
 
 class AuthenticationBloc

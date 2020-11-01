@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../repository/user_repo/user_cient_repository.dart';
+import '../../../repository/user_repo/user_client_repository.dart';
 import '../../register/ui/register_screen.dart';
 
 class CreateAccountButton extends StatelessWidget {

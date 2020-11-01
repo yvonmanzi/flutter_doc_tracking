@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '';
 
-import '../bloc/register.dart';
 import '../../authentication/authentication.dart';
+import '../bloc/register.dart';
+import 'register_button.dart';
+
 class RegisterForm extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _RegisterFormState();
@@ -61,7 +62,7 @@ class _RegisterFormState extends State<RegisterForm> {
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text('Registeration Failure'),
+                  Text('Registration Failure'),
                   Icon(Icons.error),
                 ],
               ),
@@ -75,39 +76,39 @@ class _RegisterFormState extends State<RegisterForm> {
             padding: EdgeInsets.all(20.0),
             child: Form(
                 child: ListView(
-                  children: <Widget>[
-                    TextFormField(
-                      controller: _emailController,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.email),
-                        labelText: 'Email',
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      autocorrect: false,
-                      autovalidate: true,
-                      validator: (_) {
-                        return !state.isEmailValid ? 'Invalid Email' : null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _passwordController,
-                      decoration: InputDecoration(
-                        icon: Icon(Icons.lock),
-                        labelText: 'Password',
-                      ),
-                      obscureText: true,
-                      autocorrect: false,
-                      autovalidate: true,
-                      validator: (_) {
-                        return !state.isPasswordValid ? 'Invalid Password' : null;
-                      },
-                    ),
-                    RegisterButton(
-                      onPressed:
+              children: <Widget>[
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.email),
+                    labelText: 'Email',
+                  ),
+                  keyboardType: TextInputType.emailAddress,
+                  autocorrect: false,
+                  autovalidate: true,
+                  validator: (_) {
+                    return !state.isEmailValid ? 'Invalid Email' : null;
+                  },
+                ),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.lock),
+                    labelText: 'Password',
+                  ),
+                  obscureText: true,
+                  autocorrect: false,
+                  autovalidate: true,
+                  validator: (_) {
+                    return !state.isPasswordValid ? 'Invalid Password' : null;
+                  },
+                ),
+                RegisterButton(
+                  onPressed:
                       isRegisterButtonEnabled(state) ? _onFormSubmitted : null,
-                    ),
-                  ],
-                )),
+                ),
+              ],
+            )),
           );
         },
       ),
@@ -141,3 +142,4 @@ class _RegisterFormState extends State<RegisterForm> {
       ),
     );
   }
+}

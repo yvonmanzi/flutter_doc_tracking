@@ -1,7 +1,7 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../../../src/repository/user_repo/user_cient_repository.dart';
+import '../../../../src/repository/user_repo/user_client_repository.dart';
 import 'login.dart';
 import 'validators.dart';
 
