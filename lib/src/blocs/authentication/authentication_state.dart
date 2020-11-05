@@ -9,15 +9,14 @@ abstract class AuthenticationState extends Equatable {
 class AuthenticationUninitialized extends AuthenticationState {}
 
 class AuthenticationAuthenticated extends AuthenticationState {
-  final String userName;
+  final String email;
 
-  const AuthenticationAuthenticated(this.userName);
+  const AuthenticationAuthenticated(this.email);
   @override
-  List<Object> get props => [userName];
+  List<Object> get props => [email];
   @override
   String toString() {
-    // TODO: implement toString
-    return 'Authenticated {userName: $userName}';
+    return 'Authenticated {email: $email}';
   }
 }
 

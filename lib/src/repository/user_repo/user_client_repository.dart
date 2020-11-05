@@ -23,9 +23,21 @@ class UserRepository {
     return _firebaseAuth.currentUser();
   }
 
-  Future<void> signInWithCredentials(String email, String password) {
-    return _firebaseAuth.signInWithEmailAndPassword(
-        email: email, password: password);
+// TODO: devise a better way to handle errors.
+  Future<FirebaseUser> signInWithCredentials(String email, String password) {
+    try {
+      _firebaseAuth.signInWithEmailAndPassword(
+          email: email, password: password);
+      return _firebaseAuth.currentUser();
+    } catch (e) {
+      return e;
+    }
+    /*if(e.code == 'user-not-found'){
+      print('no user found for that email');}
+      else if (e.dode == 'wrong-password'){
+        print('wrong password provided for that user');
+      }
+    * */
   }
 
   Future<void> signUp({String email, String password}) async {
@@ -42,6 +54,8 @@ class UserRepository {
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
+    //TODO: this current user has a uid attribute.
+    //we may use this uid to identify each user's collection of docs
     return currentUser != null;
   }
 

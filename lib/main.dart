@@ -36,7 +36,10 @@ void main() {
         ),
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {
-            if (state is AuthenticationUninitialized) return SplashScreen();
+            if (state is AuthenticationUninitialized) {
+              print('this is where we at: $state');
+              return SplashScreen();
+            }
             if (state is AuthenticationAuthenticated)
               return BlocProvider<DocFirestoreBloc>(
                   create: (context) =>

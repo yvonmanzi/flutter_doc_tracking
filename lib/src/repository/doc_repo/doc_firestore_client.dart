@@ -10,6 +10,9 @@ class DocFirestoreClient {
       : assert(firestoreInstance != null),
         _firestoreInstance = firestoreInstance;
 
+  //TODO: When interacting with fstore, we always need access to a user's specific collection.
+  // we can just be plugging in everywhere. so this api has to have a hash with it at all times.
+  //for now tho, let's ignore it.
   Future<String> addDocument(
       {int id, @required String title, @required String expiration}) async {
     final data = {'title': title, 'expiration': expiration};

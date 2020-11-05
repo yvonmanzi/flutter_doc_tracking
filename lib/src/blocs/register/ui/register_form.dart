@@ -84,7 +84,7 @@ class _RegisterFormState extends State<RegisterForm> {
                     labelText: 'Email',
                   ),
                   keyboardType: TextInputType.emailAddress,
-                  autocorrect: false,
+                  autocorrect: true,
                   autovalidate: true,
                   validator: (_) {
                     return !state.isEmailValid ? 'Invalid Email' : null;
