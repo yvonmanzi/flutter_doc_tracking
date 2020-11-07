@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 import '../../models/models.dart';
+import '../../util/firebase_util.dart';
 
 class DocFirestoreClient {
   final Firestore _firestoreInstance;
@@ -10,15 +12,22 @@ class DocFirestoreClient {
       : assert(firestoreInstance != null),
         _firestoreInstance = firestoreInstance;
 
-  //TODO: When interacting with fstore, we always need access to a user's specific collection.
-  // we can just be plugging in everywhere. so this api has to have a hash with it at all times.
-  //for now tho, let's ignore it.
+  //turns out the shortcut is to use current user's uuid. same idea of hashing password,
+  //but google does that for us automatically. might be worth the effort to checkout some
+  // mechanism behind google's hashing algorithm.
   Future<String> addDocument(
-      {int id, @required String title, @required String expiration}) async {
-    final data = {'title': title, 'expiration': expiration};
+      {int
+          id, // might not be important to give it an id. it is assigned by google instantly.
+      @required FirebaseUser user,
+      @required String title,
+      @required String expiration}) async {
+    if (id == null) {
+      id = FirebaseUtil.hashId(docTitle: title, expiration: expiration);
+    }
+    final data = {'id': id, 'title': title, 'expiration': expiration};
     try {
       await _firestoreInstance
-          .collection('docs')
+          .collection('${user.uid}')
           .document('${title.toLowerCase()}')
           .setData(data);
       return title;
@@ -27,26 +36,33 @@ class DocFirestoreClient {
     }
   }
 
-  Future<String> deleteDocument({@required String title}) async {
+  Future<void> deleteDocument(
+      {@required FirebaseUser user, @required String title}) async {
+    var collectionRef = _firestoreInstance.collection('${user.uid}');
     try {
-      await _firestoreInstance
-          .collection('docs')
+      await collectionRef
           .document('${title.toLowerCase()}')
-          .delete();
-      return title;
+          .snapshots()
+          .forEach((doc) {
+        if (doc['title'] == title.toLowerCase()) {
+          collectionRef.document('${title.toLowerCase()}').delete();
+          return;
+        }
+      });
+      // TODO: HANDLE ERRORS BETTER.
     } catch (_) {
       return ("cant delete for some reason");
     }
   }
 
-  Future<List<Doc>> getAllDocs() async {
+  Future<List<Doc>> getAllDocs({@required FirebaseUser user}) async {
     try {
       List<Doc> list = await _firestoreInstance
-          .collection('docs')
+          .collection('${user.uid}')
           .getDocuments()
           .then((QuerySnapshot snapshot) =>
               snapshot.documents.map((doc) => Doc.fromMap(doc.data)).toList());
-      print('we did it: ${list.length}, ${list[0].expiration}');
+      print('we did it: ${list.length}, ${list[0].title}');
       return list;
     } catch (error) {
       print('could not get the docs, ${error.toString()} happened');
@@ -54,11 +70,14 @@ class DocFirestoreClient {
     }
   }
 
-  Future<void> deleteAll() async {
+  Future<void> deleteAll({@required FirebaseUser user}) async {
+    var collectionRef = _firestoreInstance.collection('${user.uid}');
     try {
-      return await _firestoreInstance.collection('docs').getDocuments().then(
-          (value) => value.documents
-              .map((doc) => deleteDocument(title: doc.data['title'])));
+      return await collectionRef
+          .getDocuments()
+          .then((snapshot) => snapshot.documents.forEach((doc) {
+                collectionRef.document('${doc.documentID}').delete();
+              }));
     } catch (error) {
       print('an error happened${error.toString()}');
     }
