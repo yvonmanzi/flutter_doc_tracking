@@ -33,24 +33,19 @@ class _NewDocState extends State<NewDoc> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-      ),
-      home: Scaffold(
-          key: _scaffoldKey,
-          appBar: AppBar(
-            title: Text('New Doc'),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              tooltip: 'back',
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
+    return Scaffold(
+        key: _scaffoldKey,
+        appBar: AppBar(
+          title: Text('New Doc'),
+          leading: IconButton(
+            icon: Icon(Icons.arrow_back),
+            tooltip: 'back',
+            onPressed: () {
+              Navigator.pop(context);
+            },
           ),
-          body: SafeArea(child: _buildDocForm())),
-    );
+        ),
+        body: SafeArea(child: _buildDocForm()));
   }
 
   Widget _buildDocForm() {

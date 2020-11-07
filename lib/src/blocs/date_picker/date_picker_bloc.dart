@@ -4,9 +4,7 @@ import './date_picker_event.dart';
 import './date_picker_state.dart';
 
 class DatePickerBloc extends Bloc<DatePickerEvent, DatePickerState> {
-  static final DatePickerState _initialState = DatePickerButtonNotPressed();
-
-  DatePickerBloc() : super(_initialState);
+  DatePickerBloc() : super(DatePickerButtonNotPressed());
 
   @override
   Stream<DatePickerState> mapEventToState(DatePickerEvent event) async* {

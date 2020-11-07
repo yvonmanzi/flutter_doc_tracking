@@ -11,6 +11,12 @@ class DocList extends StatefulWidget {
 }
 
 class _DocListState extends State<DocList> {
+  /*
+  * I think it might be useful to do some kind of caching
+  * instead of an http request every time the user needs data.
+  * we can set up some logic that makes sense for invalidating cache.
+  * actually this might be an opportunity to use Redis. huh!
+  * */
   DocFirestoreBloc _docFirestoreBloc;
   int count = 0;
   List<Doc> docs;
@@ -32,7 +38,11 @@ class _DocListState extends State<DocList> {
     if (state is DocFirestoreLoading) return CircularProgressIndicator();
     if (state is DocFirestoreSuccess) {
       if (docs.length > 0) docs.clear();
-      docs = state.list;
+      /*
+      * TODO: might be useful to only use props instead of accessing
+      *  local variables of a state class.
+      *  */
+      docs = state.props[0];
       count = docs.length;
       print("first doc: ${docs[0].title}");
     }
@@ -47,18 +57,23 @@ class _DocListState extends State<DocList> {
             elevation: 1.0,
             child: ListTile(
               leading: CircleAvatar(
-                backgroundColor: Colors.blue,
+                backgroundColor: Colors.red,
                 //(Validate.getExpiryString(docs[position].expiration) != '0')
                 //? Colors.blue
                 //: Colors.red,
-                child: Text(
-                  docs[position].title,
-                ),
+                child: Text('${position.toString()}'),
               ),
-              title: Text(docs[position].expiration),
-              // d1 +
-              // "\nExp: " +
-              // DateUtils.convertToDateFull(docs[position].expiration)),
+              title: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Text(docs[position].title),
+                  Text(docs[position].expiration),
+                  // d1 +
+                  // "\nExp: " +
+                  // DateUtils.convertToDateFull(docs[position].expiration)),
+                ],
+              ),
 //TODO: think about this & implement the feature.
               onTap: () => null,
             ),

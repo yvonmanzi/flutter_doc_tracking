@@ -6,19 +6,18 @@ import './doc_firestore_state.dart';
 import '../../../src/repository/doc_repo/doc_repository.dart';
 
 class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
-  final DocRepository _repository;
-  static final DocFirestoreState _initialState = DocFirestoreInitial();
+  final DocRepository _docRepository;
 
   DocFirestoreBloc({@required DocRepository repository})
       : assert(repository != null),
-        _repository = repository,
-        super(_initialState);
+        _docRepository = repository,
+        super(DocFirestoreInitial());
 
   @override
   Stream<DocFirestoreState> mapEventToState(DocFirestoreEvent event) async* {
     if (event is DocFirestoreSave) {
       try {
-        _repository.addDocument(
+        _docRepository.addDocument(
             title: event.title, expiration: event.expiryDate);
         yield DocFirestoreSuccess();
       } catch (error) {
@@ -27,7 +26,7 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
     }
     if (event is DocFirestoreDelete) {
       try {
-        _repository.deleteDocument(title: event.title);
+        _docRepository.deleteDocument(title: event.title);
         yield DocFirestoreSuccess();
       } catch (error) {
         yield DocFirestoreFailure(error: error);
@@ -35,7 +34,7 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
     }
     if (event is DocFirestoreDeleteAll) {
       try {
-        _repository.deleteAll();
+        _docRepository.deleteAll();
         yield DocFirestoreSuccess();
       } catch (error) {
         yield DocFirestoreFailure(error: error);
@@ -44,7 +43,7 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
     if (event is DocFirestoreFetchAll) {
       try {
         yield DocFirestoreLoading();
-        final list = await _repository.getAllDocuments();
+        final list = await _docRepository.getAllDocuments();
         yield DocFirestoreSuccess(list: list);
       } catch (error) {
         yield DocFirestoreFailure(error: error.toString());
