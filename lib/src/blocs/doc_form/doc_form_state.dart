@@ -1,3 +1,4 @@
+import 'package:doctracking/src/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -22,16 +23,15 @@ class DocumentFormSubmissionFailure extends DocState {
 }
 
 class DocumentFormSubmissionSuccess extends DocState {
-  final String title;
-  final String expiryDate;
+  final Doc doc;
 
-  DocumentFormSubmissionSuccess(this.title, this.expiryDate);
+  DocumentFormSubmissionSuccess({@required this.doc});
 
   @override
-  List<Object> get props => [title, expiryDate];
+  List<Object> get props => [doc];
 
   @override
   String toString() {
-    return 'this is $title expiring on $expiryDate';
+    return 'this is ${doc.title} expiring on ${doc.expiration}';
   }
 }

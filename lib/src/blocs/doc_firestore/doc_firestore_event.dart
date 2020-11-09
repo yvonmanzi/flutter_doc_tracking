@@ -1,3 +1,4 @@
+import 'package:doctracking/src/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
@@ -9,15 +10,15 @@ abstract class DocFirestoreEvent extends Equatable {
 }
 
 class DocFirestoreSave extends DocFirestoreEvent {
-  final String title;
-  final String expiryDate;
+  final Doc doc;
 
-  DocFirestoreSave({@required this.title, @required this.expiryDate});
+  DocFirestoreSave({@required this.doc});
 
   @override
-  List<Object> get props => [title, expiryDate];
+  List<Object> get props => [doc];
 }
 
+// TODO: might end up using the id from firestore instead.
 class DocFirestoreDelete extends DocFirestoreEvent {
   final String title;
 

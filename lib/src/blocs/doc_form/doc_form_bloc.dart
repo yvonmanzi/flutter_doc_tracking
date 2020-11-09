@@ -27,9 +27,8 @@ class DocFormBloc extends Bloc<DocEvent, DocState> {
       yield DocumentFormSubmissionLoading();
       final FormState form = event.formKey.currentState;
       if (form.validate()) {
-        yield DocumentFormSubmissionSuccess(event.title, event.expiration);
-        _docFirestoreBloc.add(
-            DocFirestoreSave(title: event.title, expiryDate: event.expiration));
+        yield DocumentFormSubmissionSuccess(doc: event.doc);
+        _docFirestoreBloc.add(DocFirestoreSave(doc: event.doc));
       } else
         DocumentFormSubmissionFailure(error: 'form is invalid');
     }

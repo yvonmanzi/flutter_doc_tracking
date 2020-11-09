@@ -1,3 +1,4 @@
+import 'package:doctracking/src/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:meta/meta.dart';
@@ -10,15 +11,12 @@ abstract class DocEvent extends Equatable {
 }
 
 class DocumentFormSaveButtonPressed extends DocEvent {
-  final String title;
-  final String expiration;
+  final Doc doc;
+
   final GlobalKey<FormState> formKey;
 
-  DocumentFormSaveButtonPressed(
-      {@required this.title,
-      @required this.expiration,
-      @required this.formKey});
-
+  DocumentFormSaveButtonPressed({@required this.doc, @required this.formKey});
+//TODO: all attributes should be accessed through props?
   @override
-  List<Object> get props => [title, expiration, formKey];
+  List<Object> get props => [doc, formKey];
 }
