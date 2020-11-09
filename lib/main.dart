@@ -25,8 +25,8 @@ void main() {
         title: 'doc tracking',
         theme: ThemeData(
           primaryColorBrightness: Brightness.dark,
-          primarySwatch: Colors.deepOrange,
-          secondaryHeaderColor: Colors.deepOrange,
+          primarySwatch: Colors.blue,
+          secondaryHeaderColor: Colors.blueAccent,
         ),
         home: BlocBuilder<AuthenticationBloc, AuthenticationState>(
           builder: (context, state) {

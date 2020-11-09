@@ -19,18 +19,17 @@ class DocFirestoreClient {
       {int
           id, // might not be important to give it an id. it is assigned by google instantly.
       @required FirebaseUser user,
-      @required String title,
-      @required String expiration}) async {
+      @required Doc doc}) async {
     if (id == null) {
-      id = FirebaseUtil.hashId(docTitle: title, expiration: expiration);
+      id = FirebaseUtil.hashId(docTitle: doc.title, expiration: doc.expiration);
     }
-    final data = {'id': id, 'title': title, 'expiration': expiration};
+    final data = doc.toMap();
     try {
       await _firestoreInstance
           .collection('${user.uid}')
-          .document('${title.toLowerCase()}')
+          .document('${doc.title.toLowerCase()}')
           .setData(data);
-      return title;
+      return doc.title;
     } catch (_) {
       return ('adding a doc not working!');
     }

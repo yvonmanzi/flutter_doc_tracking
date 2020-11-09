@@ -15,9 +15,8 @@ class DocRepository {
         _docFirestoreClient = docFirestoreClient,
         _user = user;
 
-  Future<void> addDocument({@required String title, String expiration}) async {
-    return await _docFirestoreClient.addDocument(
-        user: _user, title: title, expiration: expiration);
+  Future<void> addDocument({@required Doc doc}) async {
+    return await _docFirestoreClient.addDocument(user: _user, doc: doc);
   }
 
   Future<void> deleteDocument({@required String title}) async {

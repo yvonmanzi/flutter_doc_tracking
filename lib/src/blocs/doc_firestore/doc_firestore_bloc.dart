@@ -17,8 +17,7 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
   Stream<DocFirestoreState> mapEventToState(DocFirestoreEvent event) async* {
     if (event is DocFirestoreSave) {
       try {
-        _docRepository.addDocument(
-            title: event.title, expiration: event.expiryDate);
+        _docRepository.addDocument(doc: event.doc);
         yield DocFirestoreSuccess();
       } catch (error) {
         yield DocFirestoreFailure(error: error);
