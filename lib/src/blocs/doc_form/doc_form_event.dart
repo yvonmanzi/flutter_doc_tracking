@@ -11,12 +11,16 @@ abstract class DocEvent extends Equatable {
 }
 
 class DocumentFormSaveButtonPressed extends DocEvent {
-  final Doc doc;
+  final Doc _doc;
 
-  final GlobalKey<FormState> formKey;
+  final GlobalKey<FormState> _formKey;
 
-  DocumentFormSaveButtonPressed({@required this.doc, @required this.formKey});
-//TODO: all attributes should be accessed through props?
+  DocumentFormSaveButtonPressed(
+      {@required Doc doc, @required GlobalKey<FormState> formKey})
+      : assert(doc != null),
+        assert(formKey != null),
+        _doc = doc,
+        _formKey = formKey;
   @override
-  List<Object> get props => [doc, formKey];
+  List<Object> get props => [_doc, _formKey];
 }

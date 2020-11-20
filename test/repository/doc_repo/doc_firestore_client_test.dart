@@ -1,28 +1,45 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:doctracking/src/models/models.dart';
-import 'package:doctracking/src/repository/doc_repo/doc_firestore_client.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+import '../../../lib/src/models/models.dart';
+import '../../../lib/src/repository/doc_repo/doc_firestore_client.dart';
+
 class MockFirestore extends Mock implements Firestore {}
+class MockFirebaseUser extends Mock implements FirebaseUser{}
 
 class MockDocFirestoreClient extends Mock implements DocFirestoreClient {
   DocFirestoreClient _real;
+  FirebaseUser _user;
 
-  MockDocFirestoreClient(Firestore firestoreInstance) {
-    _real = DocFirestoreClient(firestoreInstance: firestoreInstance);
-    when(addDocument(title: 'passport_test', expiration: '2021')).thenAnswer(
-        (_) => _real.addDocument(title: 'passport', expiration: '2021'));
+  MockDocFirestoreClient(FirebaseUser user, Firestore firestoreInstance) {
+    _real =
+        DocFirestoreClient(user: _user, firestoreInstance: firestoreInstance);
+    var doc = Doc(
+        title: 'passport_test',
+        notifyAtHalfYearMark: 1,
+        notifyAtMonthMark: 1,
+        notifyAtOneYearMark: 1,
+        notifyAtQuarterMark: 1,
+        expiration: '2021');
+    when(addDocument(doc: doc)).thenAnswer((_) => _real.addDocument(doc: doc));
   }
 }
 
 void main() {
-  test('should assert if null', () {
-    expect(
-      () => DocFirestoreClient(firestoreInstance: null),
-      throwsA(isAssertionError),
-    );
-  });
+  group('should assert if at least one of the args is null', () {
+    final mockFirestoreInstance = MockFirestore();
+    final mockFirebaseUser = MockFirebaseUser();
+
+    test(' should assert if user is null', (){
+      expect(
+            () => DocFirestoreClient(firestoreInstance: mockFirestoreInstance, user: null),
+        throwsA(isAssertionError),);
+      test('should assert if firestoreInstance is null', (){
+        expect(()=> DocFirestoreClient(firestoreInstance: null, user: mockFirebaseUser.currentUser() ), matcher)
+      });
+    });
 
   group('addDocument', () {
     final mockFirestoreInstance = MockFirestore();

@@ -1,9 +1,5 @@
 import 'package:meta/meta.dart';
 
-// TODO: Add comments to clarify things for future me.!
-// Maybe I should change these states to classes to maintain consistency
-// over the application. I think, here, though that since each state would not
-// have any data of its own, it makes sense to just use variables here.
 class LoginState {
   final bool isEmailValid;
   final bool isPasswordValid;

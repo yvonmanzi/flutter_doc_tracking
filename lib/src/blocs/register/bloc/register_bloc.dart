@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../repository/user_repo/user_client_repository.dart';
+import '../../../repository/user_repo/user_repository.dart';
 import '../../login/bloc/validators.dart';
 import 'register.dart';
 

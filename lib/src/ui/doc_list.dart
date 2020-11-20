@@ -11,6 +11,8 @@ class DocList extends StatefulWidget {
 }
 
 class _DocListState extends State<DocList> {
+  //TODO: CACHING, maybe using redis even tho it might not be the most
+  // appropriate tool here.
   /*
   * I think it might be useful to do some kind of caching
   * instead of an http request every time the user needs data.
@@ -38,18 +40,15 @@ class _DocListState extends State<DocList> {
     if (state is DocFirestoreLoading) return CircularProgressIndicator();
     if (state is DocFirestoreSuccess) {
       if (docs.length > 0) docs.clear();
-      /*
-      * TODO: might be useful to only use props instead of accessing
-      *  local variables of a state class.
-      *  */
-      docs = state.props[0];
+      docs = state.props.first;
       count = docs.length;
       print("first doc: ${docs[0].title}");
     }
     return ListView.builder(
         itemCount: count,
         itemBuilder: (BuildContext context, int position) {
-          String dd = Validate.getExpiryString(docs[position].expiration);
+          String dd = Validate.getRemainingTimeBeforeExpiryString(
+              docs[position].expiration);
           String d1 = (dd != '1') ? 'days left' : 'day left';
           print("");
           return Card(
@@ -83,9 +82,6 @@ class _DocListState extends State<DocList> {
 
   @override
   void dispose() {
-    // TODO: It's not clear which widget is responsible for disposing the blocs.
-    // it might be appropriate to do so within the parent widget, the widget creating the bloc.
-    // make this clearer
     _docFirestoreBloc.close();
     super.dispose();
   }

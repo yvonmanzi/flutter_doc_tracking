@@ -3,7 +3,7 @@ import 'package:doctracking/src/blocs/authentication/authentication_state.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../repository/user_repo/user_client_repository.dart';
+import '../../repository/user_repo/user_repository.dart';
 import 'authentication_event.dart';
 
 class AuthenticationBloc
@@ -28,6 +28,7 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapAuthenticationAppStartedToState() async* {
+    yield AuthenticationLoading();
     final isSignedIn = await _userRepository.isSignedIn();
     if (isSignedIn) {
       final currentUser = await _userRepository.getUser();
@@ -38,12 +39,14 @@ class AuthenticationBloc
   }
 
   Stream<AuthenticationState> _mapAuthenticationLoggedInToState() async* {
+    yield AuthenticationLoading();
     yield AuthenticationAuthenticated(
         currentUser: await _userRepository.getUser());
   }
 
   Stream<AuthenticationState> _mapAuthenticationLoggedOutToState() async* {
+    yield AuthenticationLoading();
+    await _userRepository.signOut();
     yield AuthenticationUnauthenticated();
-    _userRepository.signOut();
   }
 }

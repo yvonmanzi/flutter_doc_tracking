@@ -1,15 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:meta/meta.dart';
 
-class UserRepository {
+class UserClientRepository {
   final FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
 
-// this ?? is possible 'cause variables in dart are initialized as null
-//cause they are all objects.  here, if they are not injected, then we instantiate
-  //them ourselves. This configuration, as opposed to just creating new instances right
-//  here and now allows to inject mock dependencies to test things. so its good practice I think. investiagae later.
-  UserRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
+  /*
+  this ?? is possible 'cause variables in dart are initialized as null
+cause they are all objects.  here, if they are not injected, then we instantiate
+  them ourselves. This configuration, as opposed to just creating new instances right
+  here and now allows to inject mock dependencies to test things. so its good practice.
+  * */
+  UserClientRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _googleSignIn = googleSignIn ?? GoogleSignIn();
 
@@ -24,9 +27,10 @@ class UserRepository {
   }
 
 // TODO: devise a better way to handle errors.
-  Future<FirebaseUser> signInWithCredentials(String email, String password) {
+  Future<FirebaseUser> signInWithCredentials(
+      {@required String email, @required String password}) async {
     try {
-      _firebaseAuth.signInWithEmailAndPassword(
+      await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       return _firebaseAuth.currentUser();
     } catch (e) {
@@ -40,7 +44,8 @@ class UserRepository {
     * */
   }
 
-  Future<void> signUp({String email, String password}) async {
+  Future<void> signUp(
+      {@required String email, @required String password}) async {
     return await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
   }
@@ -54,8 +59,6 @@ class UserRepository {
 
   Future<bool> isSignedIn() async {
     final currentUser = await _firebaseAuth.currentUser();
-    //TODO: this current user has a uid attribute.
-    //we may use this uid to identify each user's collection of docs
     return currentUser != null;
   }
 

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 import '../../models/doc.dart';
@@ -6,28 +5,23 @@ import '../doc_repo/doc_firestore_client.dart';
 
 class DocRepository {
   final DocFirestoreClient _docFirestoreClient;
-  final FirebaseUser _user;
-  DocRepository(
-      {@required FirebaseUser user,
-      @required DocFirestoreClient docFirestoreClient})
+  DocRepository({@required DocFirestoreClient docFirestoreClient})
       : assert(docFirestoreClient != null),
-        assert(user != null),
-        _docFirestoreClient = docFirestoreClient,
-        _user = user;
+        _docFirestoreClient = docFirestoreClient;
 
   Future<void> addDocument({@required Doc doc}) async {
-    return await _docFirestoreClient.addDocument(user: _user, doc: doc);
+    return await _docFirestoreClient.addDocument(doc: doc);
   }
 
   Future<void> deleteDocument({@required String title}) async {
-    await _docFirestoreClient.deleteDocument(user: _user, title: title);
+    await _docFirestoreClient.deleteDocument(title: title);
   }
 
   Future<List<Doc>> getAllDocuments() async {
-    return await _docFirestoreClient.getAllDocs(user: _user);
+    return await _docFirestoreClient.getAllDocs();
   }
 
   Future<void> deleteAll() async {
-    await _docFirestoreClient.deleteAll(user: _user);
+    await _docFirestoreClient.deleteAll();
   }
 }

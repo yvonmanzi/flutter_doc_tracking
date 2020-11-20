@@ -25,10 +25,11 @@ class DocFormBloc extends Bloc<DocEvent, DocState> {
   Stream<DocState> mapEventToState(DocEvent event) async* {
     if (event is DocumentFormSaveButtonPressed) {
       yield DocumentFormSubmissionLoading();
-      final FormState form = event.formKey.currentState;
+      final GlobalKey<FormState> key = event.props[1];
+      final FormState form = key.currentState;
       if (form.validate()) {
-        yield DocumentFormSubmissionSuccess(doc: event.doc);
-        _docFirestoreBloc.add(DocFirestoreSave(doc: event.doc));
+        yield DocumentFormSubmissionSuccess(doc: event.props.first);
+        _docFirestoreBloc.add(DocFirestoreSave(doc: event.props[1]));
       } else
         DocumentFormSubmissionFailure(error: 'form is invalid');
     }

@@ -3,30 +3,26 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:meta/meta.dart';
 
 import '../../models/models.dart';
-import '../../util/firebase_util.dart';
 
 class DocFirestoreClient {
   final Firestore _firestoreInstance;
+  final FirebaseUser _user;
 
-  DocFirestoreClient({@required Firestore firestoreInstance})
+  DocFirestoreClient(
+      {@required FirebaseUser user, @required Firestore firestoreInstance})
       : assert(firestoreInstance != null),
+        assert(user != null),
+        _user = user,
         _firestoreInstance = firestoreInstance;
 
   //turns out the shortcut is to use current user's uuid. same idea of hashing password,
   //but google does that for us automatically. might be worth the effort to checkout some
   // mechanism behind google's hashing algorithm.
-  Future<String> addDocument(
-      {int
-          id, // might not be important to give it an id. it is assigned by google instantly.
-      @required FirebaseUser user,
-      @required Doc doc}) async {
-    if (id == null) {
-      id = FirebaseUtil.hashId(docTitle: doc.title, expiration: doc.expiration);
-    }
+  Future<String> addDocument({@required Doc doc}) async {
     final data = doc.toMap();
     try {
       await _firestoreInstance
-          .collection('${user.uid}')
+          .collection('${_user.uid}')
           .document('${doc.title.toLowerCase()}')
           .setData(data);
       return doc.title;
@@ -35,9 +31,8 @@ class DocFirestoreClient {
     }
   }
 
-  Future<void> deleteDocument(
-      {@required FirebaseUser user, @required String title}) async {
-    var collectionRef = _firestoreInstance.collection('${user.uid}');
+  Future<void> deleteDocument({@required String title}) async {
+    var collectionRef = _firestoreInstance.collection('${_user.uid}');
     try {
       await collectionRef
           .document('${title.toLowerCase()}')
@@ -54,10 +49,10 @@ class DocFirestoreClient {
     }
   }
 
-  Future<List<Doc>> getAllDocs({@required FirebaseUser user}) async {
+  Future<List<Doc>> getAllDocs() async {
     try {
       List<Doc> list = await _firestoreInstance
-          .collection('${user.uid}')
+          .collection('${_user.uid}')
           .getDocuments()
           .then((QuerySnapshot snapshot) =>
               snapshot.documents.map((doc) => Doc.fromMap(doc.data)).toList());
@@ -69,8 +64,8 @@ class DocFirestoreClient {
     }
   }
 
-  Future<void> deleteAll({@required FirebaseUser user}) async {
-    var collectionRef = _firestoreInstance.collection('${user.uid}');
+  Future<void> deleteAll() async {
+    var collectionRef = _firestoreInstance.collection('${_user.uid}');
     try {
       return await collectionRef
           .getDocuments()
