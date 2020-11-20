@@ -44,10 +44,15 @@ cause they are all objects.  here, if they are not injected, then we instantiate
     * */
   }
 
-  Future<void> signUp(
+  Future<FirebaseUser> signUp(
       {@required String email, @required String password}) async {
-    return await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return _firebaseAuth.currentUser();
+    } catch (e) {
+      return e;
+    }
   }
 
   Future<void> signOut() async {

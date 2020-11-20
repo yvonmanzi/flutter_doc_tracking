@@ -28,15 +28,15 @@ void main() {
   final authResult = AuthResultMock();
 
   group("user client repository", () {
+    //mocks that apply to all the tests in the group
+    when(firebaseAuth.currentUser())
+        .thenAnswer((_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
     test('signing in with google returns firebase user', () async {
       // mock method calls
-      when(firebaseAuth.currentUser()).thenAnswer(
-          (_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
       when(googleSignIn.signIn()).thenAnswer(
           (_) => Future<GoogleSignInAccountMock>.value(googleSignInAccount));
       when(googleSignInAccount.authentication).thenAnswer((realInvocation) =>
           Future<GoogleSignInAuthenticationMock>.value(googleSignInAuth));
-
       expect(
           await userClientRepository.signInWithGoogle(), currentFirebaseUser);
       // verify these methods were called only once.
@@ -45,20 +45,59 @@ void main() {
       verify(googleSignInAccount.authentication).called(1);
     });
 
-    test('signing in with credentials returns a Firebase user', () async {
+    /*
+    *
+    * */
+
+    test('sign up with email and password', () async {
       final email = 'email@example.com';
       final password = 'password';
-      when(userClientRepository.signInWithCredentials(
-              email: email, password: password))
-          .thenAnswer(
-              (_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
-      when(firebaseAuth.signInWithEmailAndPassword(
+
+      when(firebaseAuth.createUserWithEmailAndPassword(
               email: email, password: password))
           .thenAnswer((realInvocation) => Future.value(authResult));
+
       expect(
-          await userClientRepository.signInWithCredentials(
-              email: email, password: password),
+          await userClientRepository.signUp(email: email, password: password),
           currentFirebaseUser);
     });
+  });
+  /*
+  *
+  * */
+
+  test('signing in with credentials returns a Firebase user', () async {
+    final email = 'email@example.com';
+    final password = 'password';
+
+    when(firebaseAuth.signInWithEmailAndPassword(
+            email: email, password: password))
+        .thenAnswer((realInvocation) => Future.value(authResult));
+
+    expect(
+        await userClientRepository.signInWithCredentials(
+            email: email, password: password),
+        currentFirebaseUser);
+  });
+/*
+
+* */
+  test(
+      'is signed in returns true iff FirebaseAuth has a user.'
+      ' Otherwise returns false', () async {
+    expect(await userClientRepository.isSignedIn(), true);
+    when(firebaseAuth.currentUser())
+        .thenAnswer((realInvocation) => Future<FirebaseUserMock>.value(null));
+    expect(await userClientRepository.isSignedIn(), false);
+  });
+
+  /*
+  *
+  * */
+  test('get user returns the current firebase user', () async {
+    expect(await userClientRepository.getUser(), currentFirebaseUser);
+    when(firebaseAuth.currentUser())
+        .thenAnswer((realInvocation) => Future<FirebaseUserMock>.value(null));
+    expect(await userClientRepository.getUser(), null);
   });
 }
