@@ -18,17 +18,12 @@ class DocFirestoreClient {
   //turns out the shortcut is to use current user's uuid. same idea of hashing password,
   //but google does that for us automatically. might be worth the effort to checkout some
   // mechanism behind google's hashing algorithm.
-  Future<String> addDocument({@required Doc doc}) async {
+  Future<void> addDocument({@required Doc doc}) async {
     final data = doc.toMap();
-    try {
-      await _firestoreInstance
-          .collection('${_user.uid}')
-          .document('${doc.title.toLowerCase()}')
-          .setData(data);
-      return doc.title;
-    } catch (_) {
-      return ('adding a doc not working!');
-    }
+    await _firestoreInstance
+        .collection('${_user.uid}')
+        .document('${doc.title.toLowerCase()}')
+        .setData(data);
   }
 
   Future<void> deleteDocument({@required String title}) async {

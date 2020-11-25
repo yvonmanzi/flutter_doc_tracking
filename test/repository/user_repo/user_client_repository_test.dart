@@ -87,7 +87,7 @@ void main() {
       ' Otherwise returns false', () async {
     expect(await userClientRepository.isSignedIn(), true);
     when(firebaseAuth.currentUser())
-        .thenAnswer((realInvocation) => Future<FirebaseUserMock>.value(null));
+        .thenAnswer((_) => Future<FirebaseUserMock>.value(null));
     expect(await userClientRepository.isSignedIn(), false);
   });
 
@@ -97,7 +97,7 @@ void main() {
   test('get user returns the current firebase user', () async {
     expect(await userClientRepository.getUser(), currentFirebaseUser);
     when(firebaseAuth.currentUser())
-        .thenAnswer((realInvocation) => Future<FirebaseUserMock>.value(null));
+        .thenAnswer((_) => Future<FirebaseUserMock>.value(null));
     expect(await userClientRepository.getUser(), null);
   });
 }
