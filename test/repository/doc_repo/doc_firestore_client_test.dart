@@ -6,8 +6,15 @@ import 'package:mockito/mockito.dart';
 import '../../../lib/src/models/models.dart';
 import '../../../lib/src/repository/doc_repo/doc_firestore_client.dart';
 
-class MockFirestore extends Mock implements Firestore {}
-class MockFirebaseUser extends Mock implements FirebaseUser{}
+class FirestoreMock extends Mock implements Firestore {}
+
+class FirebaseUserMock extends Mock implements FirebaseUser {}
+
+class CollectionReferenceMock extends Mock implements CollectionReference {}
+
+class QuerySnapshotMock extends Mock implements QuerySnapshot {}
+
+DocumentReferenceMock extends Mock implements DocumentReference{}
 
 class MockDocFirestoreClient extends Mock implements DocFirestoreClient {
   DocFirestoreClient _real;
@@ -28,21 +35,27 @@ class MockDocFirestoreClient extends Mock implements DocFirestoreClient {
 }
 
 void main() {
+  final firestoreInstance = FirestoreMock();
+  final firebaseUser = FirebaseUserMock();
+  final querySnapshot = QuerySnapshotMock();
+  final collectionRef = CollectionReferenceMock();
   group('should assert if at least one of the args is null', () {
-    final mockFirestoreInstance = MockFirestore();
-    final mockFirebaseUser = MockFirebaseUser();
-
-    test(' should assert if user is null', (){
+    test(' should assert if user is null', () {
       expect(
-            () => DocFirestoreClient(firestoreInstance: mockFirestoreInstance, user: null),
-        throwsA(isAssertionError),);
-      test('should assert if firestoreInstance is null', (){
-        expect(()=> DocFirestoreClient(firestoreInstance: null, user: mockFirebaseUser.currentUser() ), matcher)
+        () => DocFirestoreClient(firestoreInstance: null, user: null),
+        throwsA(isAssertionError),
+      );
+      test('should assert if firestoreInstance is null', () {
+        expect(
+            () => DocFirestoreClient(
+                firestoreInstance: firestoreInstance, user: null),
+            throwsA(isAssertionError));
       });
     });
+  });
 
-  group('addDocument', () {
-    final mockFirestoreInstance = MockFirestore();
+  group('addDocument', () async {
+    final mockFirestoreInstance = FirestoreMock();
     final mockDocFirestoreClient =
         MockDocFirestoreClient(mockFirestoreInstance);
     test('return nothing if no error was returned', () async {
@@ -61,8 +74,8 @@ void main() {
     });
   });
 
-  group('deleteDocument', () {
-    final mockFirestoreInstance = MockFirestore();
+  group('deleteDocument', () async {
+    final mockFirestoreInstance = FirestoreMock();
     final mockDocFirestoreClient =
         MockDocFirestoreClient(mockFirestoreInstance);
     test('return title if deletion succeeds', () async {
@@ -76,10 +89,12 @@ void main() {
     });
   });
 
-  group('fetchAllDocuments', () {
-    final mockFirestoreInstance = MockFirestore();
-    final mockDocFirestoreClient =
-        MockDocFirestoreClient(mockFirestoreInstance);
+  group('fetchAllDocuments', () async {
+    //TODO: would thenAsnwer work too?
+    when(firestoreInstance.collection('path')).thenReturn(collectionRef);
+    expect(await collectionRef.getDocuments().isEmpty(), true);
+
+    MockDocFirestoreClient(mockFirestoreInstance);
     test('return a list of docs when it succeeds', () async {
       List<Doc> documents;
       while (documents.length > 5)
