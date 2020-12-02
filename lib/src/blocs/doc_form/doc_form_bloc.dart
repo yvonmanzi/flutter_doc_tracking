@@ -23,7 +23,7 @@ class DocFormBloc extends Bloc<DocEvent, DocState> {
 
   @override
   Stream<DocState> mapEventToState(DocEvent event) async* {
-    if (event is DocumentFormSaveButtonPressed) {
+    if (event is DocFormSaveButtonPressed) {
       yield DocumentFormSubmissionLoading();
       final GlobalKey<FormState> key = event.props[1];
       final FormState form = key.currentState;

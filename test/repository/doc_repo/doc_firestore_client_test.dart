@@ -14,7 +14,7 @@ class CollectionReferenceMock extends Mock implements CollectionReference {}
 
 class QuerySnapshotMock extends Mock implements QuerySnapshot {}
 
-DocumentReferenceMock extends Mock implements DocumentReference{}
+class DocumentReferenceMock extends Mock implements DocumentReference {}
 
 class MockDocFirestoreClient extends Mock implements DocFirestoreClient {
   DocFirestoreClient _real;

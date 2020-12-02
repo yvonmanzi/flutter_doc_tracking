@@ -10,12 +10,11 @@ abstract class DocEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class DocumentFormSaveButtonPressed extends DocEvent {
+class DocFormSaveButtonPressed extends DocEvent {
   final Doc _doc;
-
   final GlobalKey<FormState> _formKey;
 
-  DocumentFormSaveButtonPressed(
+  DocFormSaveButtonPressed(
       {@required Doc doc, @required GlobalKey<FormState> formKey})
       : assert(doc != null),
         assert(formKey != null),

@@ -16,6 +16,7 @@ class DocRepository {
         _docFirestoreClient = docFirestoreClient;
   // Add a document to cloud firestore
   //TODO: this is a prob. it shouldn't return a void. we woulldn't be able to test it.
+  // turns out you could use an async method in thenAnswer.
   Future<void> addDocument({@required Doc doc}) async {
     return await _docFirestoreClient.addDocument(doc: doc);
   }

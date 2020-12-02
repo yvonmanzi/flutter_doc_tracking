@@ -16,37 +16,47 @@ class DocFirestoreBloc extends Bloc<DocFirestoreEvent, DocFirestoreState> {
   @override
   Stream<DocFirestoreState> mapEventToState(DocFirestoreEvent event) async* {
     if (event is DocFirestoreSave) {
+      yield DocFirestoreLoading();
       try {
-        _docRepository.addDocument(doc: event.doc);
+        await _docRepository.addDocument(doc: event.doc);
         yield DocFirestoreSuccess();
-      } catch (error) {
-        yield DocFirestoreFailure(error: error);
+      } catch (e) {
+        print('$e');
+        yield DocFirestoreFailure(error: 'add doc failed');
       }
     }
     if (event is DocFirestoreDelete) {
-      try {
-        _docRepository.deleteDocument(title: event.title);
+      yield DocFirestoreLoading();
+      await _docRepository
+          .deleteDocument(title: event.title)
+          .then((value) async* {
         yield DocFirestoreSuccess();
-      } catch (error) {
-        yield DocFirestoreFailure(error: error);
-      }
+      }).catchError((error) async* {
+        yield DocFirestoreFailure(error: 'delete doc failed');
+      });
+      /*yield DocFirestoreLoading();
+      try {
+        await _docRepository.deleteDocument(title: event.title);
+        yield DocFirestoreSuccess();
+      } catch (_) {
+        yield DocFirestoreFailure(error: 'delete doc failed');
+      }*/
     }
     if (event is DocFirestoreDeleteAll) {
-      try {
-        _docRepository.deleteAll();
+      yield DocFirestoreLoading();
+      await _docRepository.deleteAll().then((value) async* {
         yield DocFirestoreSuccess();
-      } catch (error) {
-        yield DocFirestoreFailure(error: error);
-      }
+      }).catchError((error) async* {
+        yield DocFirestoreFailure(error: 'delete all docs failed');
+      });
     }
     if (event is DocFirestoreFetchAll) {
-      try {
-        yield DocFirestoreLoading();
-        final list = await _docRepository.getAllDocuments();
+      yield DocFirestoreLoading();
+      await _docRepository.getAllDocuments().then((list) async* {
         yield DocFirestoreSuccess(list: list);
-      } catch (error) {
-        yield DocFirestoreFailure(error: error.toString());
-      }
+      }).catchError((error) async* {
+        yield DocFirestoreFailure(error: 'fetch all docs failed');
+      });
     }
   }
 }

@@ -29,7 +29,6 @@ void main() {
     when(docFirestoreClient.addDocument(doc: doc))
         .thenAnswer((_) => Future.value());
     test('calling addDocument returns void', () async {
-      expect(await docRepository.addDocument(doc: doc));
       verify(docRepository.addDocument(doc: doc)).called(1);
     });
   });

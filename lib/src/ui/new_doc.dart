@@ -184,7 +184,7 @@ class _NewDocState extends State<NewDoc> {
                         notifyAtHalfYearMark:
                             Validate.boolToInt(notifyAtHalfYearMark),
                       );
-                      _docFormBloc.add(DocumentFormSaveButtonPressed(
+                      _docFormBloc.add(DocFormSaveButtonPressed(
                           doc: doc, formKey: _docFormKey));
                     }),
               ],
