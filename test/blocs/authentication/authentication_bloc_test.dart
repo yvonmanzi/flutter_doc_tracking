@@ -23,7 +23,8 @@ void main() {
     authenticationBloc?.close();
   });
   test('should assert if null', () {
-    expect(AuthenticationBloc(userRepository: null), throwsA(isAssertionError));
+    expect(() => AuthenticationBloc(userRepository: null),
+        throwsA(isAssertionError));
   });
   /*
     * Test to ensure our initial state is what we expect.

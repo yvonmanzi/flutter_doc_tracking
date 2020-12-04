@@ -1,5 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:doctracking/src/blocs/doc_firestore/doc_firestore.dart';
+import 'package:doctracking/src/blocs/login/bloc/login.dart';
 import 'package:doctracking/src/models/doc.dart';
 import 'package:doctracking/src/repository/doc_repo/doc_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,8 +10,9 @@ class DocRepositoryMock extends Mock implements DocRepository {}
 
 void main() {
   DocFirestoreBloc bloc;
-  DocRepositoryMock repository = DocRepositoryMock();
+  DocRepositoryMock repository;
   setUp(() {
+    repository = DocRepositoryMock();
     bloc = DocFirestoreBloc(repository: repository);
   });
   tearDown(() {
@@ -40,7 +42,8 @@ void main() {
         build: () {
       when(repository.addDocument(doc: null))
           .thenThrow((_) async => throw 'add doc failed');
-      return Future.value(bloc);
+
+      return Future.value(LoginBloc(userRepository: userRepository));
     }, act: (bloc) {
       return bloc.add(DocFirestoreSave(doc: null));
     }, expect: [

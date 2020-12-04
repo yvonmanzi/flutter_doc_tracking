@@ -1,6 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-class LoginState {
+class LoginState extends Equatable {
   final bool isEmailValid;
   final bool isPasswordValid;
   final bool isSubmitting;
@@ -50,13 +51,14 @@ class LoginState {
   LoginState update({
     bool isEmailValid,
     bool isPasswordValid,
+    bool isSubmitting,
   }) {
     return copyWith(
       isEmailValid: isEmailValid,
       isPasswordValid: isPasswordValid,
       isSuccess: false,
       isFailure: false,
-      isSubmitting: false,
+      isSubmitting: isSubmitting,
     );
   }
 
@@ -86,4 +88,11 @@ class LoginState {
       isFailure: $isFailure,
     }''';
   }
+
+  @override
+  List<Object> get props =>
+      [isEmailValid, isPasswordValid, isSubmitting, isSuccess, isFailure];
+
+  @override
+  bool get stringify => true;
 }
