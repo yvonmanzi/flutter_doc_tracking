@@ -1,13 +1,13 @@
 import 'package:intl/intl.dart';
 
+//TODO: try to make sure each function has good comments here.
 class Validate {
   // Validations
   static String validateTitle(String title) {
     return (title != null && title != "") ? null : "title cannot be empty";
   }
 
-  //TODO: Get the remaining days before doc expires. the naming isn't good enough
-  static String getExpiryString(String expiration) {
+  static String getRemainingTimeBeforeExpiryString(String expiration) {
     var time = DateUtils.convertStringToDate(expiration);
     var currentTime = DateTime.now();
     Duration diff = time.difference(currentTime);
@@ -42,8 +42,7 @@ class DateUtils {
     }
   }
 
-//TODO: think about bettr naming of this function. And add comments explaining what this does.
-  static String convertToDateFull(String input) {
+  static String convertStringDateToFullDAte(String input) {
     try {
       var date = DateFormat(input).parseStrict(input);
       var formatter = DateFormat('dd MMM yyyy');
@@ -53,8 +52,8 @@ class DateUtils {
     }
   }
 
-  //TODO: better naming. also add comments. (didn't know that dart doesn't have overloading
-  static String convertToDateFullDt(DateTime input) {
+  // welcome to dart without function overloading
+  static String convertDateToFullDate(DateTime input) {
     try {
       var formatter = DateFormat('dd MMM yyyy');
       return formatter.format(input);

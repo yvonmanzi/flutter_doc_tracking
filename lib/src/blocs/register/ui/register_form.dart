@@ -51,8 +51,10 @@ class _RegisterFormState extends State<RegisterForm> {
         if (state.isSuccess) {
           BlocProvider.of<AuthenticationBloc>(context)
               .add(AuthenticationLoggedIn());
-          Navigator.of(context)
-              .pop(); //TODO: WHY DIDN'T JUST PUSH A NEW THING? HUH? WE POPPED IT OFF BUT SOMETHING ELSE HAD ALREADY TAKEN ITS PLACE IN THE STATE SINCE IT HAS ITS OWN UI.
+          Navigator.of(context).pop();
+          //TODO: WHY DIDN'T JUST PUSH A NEW THING? HUH? WE POPPED IT OFF
+          // BUT SOMETHING ELSE HAD ALREADY TAKEN ITS PLACE IN THE STATE SINCE IT HAS ITS OWN UI.
+          //we might wanna do something else here.
         }
 
         if (state.isFailure) {

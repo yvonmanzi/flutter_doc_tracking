@@ -2,18 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:meta/meta.dart';
 
-import '../../../repository/user_repo/user_client_repository.dart';
+import '../../../repository/user_repo/user_repository.dart';
 import '../bloc/login.dart';
 import 'login_form.dart';
 
 class LoginScreen extends StatelessWidget {
   final UserRepository _userRepository;
 
-  //TODO: I should make it clear when to and when not to use key value here.
-  LoginScreen({Key key, @required UserRepository userRepository})
+  LoginScreen({@required UserRepository userRepository})
       : _userRepository = userRepository,
-        assert(userRepository != null),
-        super(key: key);
+        assert(userRepository != null);
 
   @override
   Widget build(BuildContext context) {

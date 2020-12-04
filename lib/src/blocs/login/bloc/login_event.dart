@@ -8,48 +8,50 @@ abstract class LoginEvent extends Equatable {
 }
 
 class LoginEmailChanged extends LoginEvent {
-  final String email;
+  final String _email;
 
-  const LoginEmailChanged({@required this.email});
+  const LoginEmailChanged({@required String email})
+      : assert(email != null),
+        _email = email;
   @override
-  // TODO: implement props
-  List<Object> get props => [email];
+  List<Object> get props => [_email];
   @override
   String toString() {
-    return 'LoginEmailChanged{email: $email}';
+    return 'LoginEmailChanged{email: $_email}';
   }
 }
 
 class LoginPasswordChanged extends LoginEvent {
-  final String password;
+  final String _password;
 
-  const LoginPasswordChanged({@required this.password});
+  const LoginPasswordChanged({@required String password})
+      : assert(password != null),
+        _password = password;
   @override
-  // TODO: implement props
-  List<Object> get props => [password];
+  List<Object> get props => [_password];
 
   @override
   String toString() {
-    // TODO: implement toString
-    return 'LoginPasswordChanged {password: $password}';
+    return 'LoginPasswordChanged {password: $_password}';
   }
 }
 
 class LoginWithGooglePressed extends LoginEvent {}
 
 class LoginWithCredentialsPressed extends LoginEvent {
-  final String email;
-  final String password;
+  final String _email;
+  final String _password;
 
   const LoginWithCredentialsPressed(
-      {@required this.email, @required this.password});
+      {@required String email, @required String password})
+      : assert(email != null && password != null),
+        _email = email,
+        _password = password;
 
   @override
-  // TODO: implement props
-  List<Object> get props => [email, password];
+  List<Object> get props => [_email, _password];
   @override
   String toString() {
-    // TODO: implement toString
-    return 'LoginWithCredentialsPressed{email: $email, password: $password}';
+    return 'LoginWithCredentialsPressed{email: $_email, password: $_password}';
   }
 }

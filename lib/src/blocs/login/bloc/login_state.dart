@@ -1,10 +1,7 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
-// TODO: Add comments to clarify things for future me.!
-// Maybe I should change these states to classes to maintain consistency
-// over the application. I think, here, though that since each state would not
-// have any data of its own, it makes sense to just use variables here.
-class LoginState {
+class LoginState extends Equatable {
   final bool isEmailValid;
   final bool isPasswordValid;
   final bool isSubmitting;
@@ -54,13 +51,14 @@ class LoginState {
   LoginState update({
     bool isEmailValid,
     bool isPasswordValid,
+    bool isSubmitting,
   }) {
     return copyWith(
       isEmailValid: isEmailValid,
       isPasswordValid: isPasswordValid,
       isSuccess: false,
       isFailure: false,
-      isSubmitting: false,
+      isSubmitting: isSubmitting,
     );
   }
 
@@ -90,4 +88,11 @@ class LoginState {
       isFailure: $isFailure,
     }''';
   }
+
+  @override
+  List<Object> get props =>
+      [isEmailValid, isPasswordValid, isSubmitting, isSuccess, isFailure];
+
+  @override
+  bool get stringify => true;
 }

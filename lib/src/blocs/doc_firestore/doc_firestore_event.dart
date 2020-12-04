@@ -1,6 +1,7 @@
-import 'package:doctracking/src/models/models.dart';
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+
+import '../../../src/models/models.dart';
 
 abstract class DocFirestoreEvent extends Equatable {
   const DocFirestoreEvent();

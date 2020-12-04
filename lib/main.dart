@@ -7,17 +7,20 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import './src/blocs/authentication/authentication.dart';
 import './src/blocs/login/ui/login_screen.dart';
+import './src/repository/user_repo/user_client_repository.dart';
 import './src/repository/user_repo/user_repository.dart';
 import './src/ui/app.dart';
 import './src/ui/splash_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  final userRepository = UserRepository();
+  final userRepository =
+      UserRepository(userClientRepository: UserClientRepository());
 
   runApp(BlocProvider<AuthenticationBloc>(
     /*
-    * Create the bloc and instantly add an event(AuthenticationAppStarted)
+    * Create the authentication bloc,
+    * and instantly add an event(AuthenticationAppStarted)
     * */
     create: (context) => AuthenticationBloc(userRepository: userRepository)
       ..add(AuthenticationAppStarted()),
@@ -35,11 +38,10 @@ void main() {
             if (state is AuthenticationAuthenticated)
               return BlocProvider<DocFirestoreBloc>(
                   create: (context) {
-                    var user = state.props[0];
+                    var user = state.props.first;
                     var docRepository = DocRepository(
-                        user: user,
                         docFirestoreClient: DocFirestoreClient(
-                            firestoreInstance: Firestore.instance));
+                            user: user, firestoreInstance: Firestore.instance));
                     return DocFirestoreBloc(repository: docRepository);
                   },
                   child: App());

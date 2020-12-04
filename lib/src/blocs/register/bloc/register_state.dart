@@ -1,9 +1,5 @@
 import 'package:meta/meta.dart';
 
-//TODO: ASNWER WHY THIS STATE IS NOT IMPLEMENTIG EQUATABLE WHILE,
-//I THINK, IT CLEARLY NEEDS TO COMPARE STATES BUT DOES IT? IN THE UI?
-// STUFF LIKE IF STATE IS? THAT'S COMPARISON RIGHT?
-
 class RegisterState {
   final bool isEmailValid;
   final bool isPasswordValid;

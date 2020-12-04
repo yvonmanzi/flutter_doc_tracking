@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../repository/user_repo/user_client_repository.dart';
+import '../../../repository/user_repo/user_repository.dart';
 import '../bloc/register.dart';
 import 'register_form.dart';
 

@@ -1,15 +1,16 @@
 import 'package:doctracking/src/blocs/doc_firestore/doc_firestore_bloc.dart';
-import 'package:doctracking/src/blocs/doc_form/doc_form.dart';
-import 'package:doctracking/src/ui/new_doc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../src/blocs/doc_form/doc_form.dart';
+import '../../src/ui/new_doc.dart';
 import '../blocs/doc_firestore/doc_firestore.dart';
 import 'doc_list.dart';
 
 const menuReset = "Delete all documents";
 /*
  * Storing options in a list so we can add more options later
+ * if we need to.
 * */
 
 List<String> menuOptions = const <String>[menuReset];
