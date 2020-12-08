@@ -1,186 +1,165 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:doctracking/src/blocs/login/bloc/login.dart';
-import 'package:doctracking/src/blocs/login/bloc/validators.dart';
 import 'package:doctracking/src/repository/user_repo/user_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 class UserRepositoryMock extends Mock implements UserRepository {}
 
-class ValidatorsMock extends Mock implements Validators {}
-
 void main() {
-  UserRepositoryMock userRepository;
-  LoginBloc bloc;
-  ValidatorsMock validator;
-  /*
-  * use setup function here to allow new instances for each test
-  * */
-  setUp(() {
-    userRepository = UserRepositoryMock();
-    bloc = LoginBloc(userRepository: userRepository);
-    validator = ValidatorsMock();
-  });
-  tearDown(() {
-    bloc?.close();
-  });
-  test('should assert if null', () {
-    expect(() => LoginBloc(userRepository: null), throwsA(isAssertionError));
-  });
-  test('initial state is correct', () {
-    expect(
-        LoginState.initial(),
-        LoginState(
-          isEmailValid: true,
-          isPasswordValid: true,
-          isSubmitting: false,
-          isSuccess: false,
-          isFailure: false,
-        ));
-  });
-  blocTest(
-    'adding nothing does not emit any states',
-    build: () => Future.value(bloc),
-    expect: [],
-  );
-  blocTest('close does not emit new states', build: () {
-    return Future.value(bloc);
-  }, act: (bloc) {
-    return bloc?.close();
-  }, expect: []);
+  group('LoginBloc', () {
+    UserRepositoryMock userRepository;
+    LoginBloc bloc;
 
-  group('LoginEmailChanged', () {
-    /*
-   * outputs the right states in the right order when LoginEmailChanged
-   * event is added.
-   * */
+    ///Use setup function here to allow new instances for each test
+    setUp(() {
+      userRepository = UserRepositoryMock();
+      bloc = LoginBloc(userRepository: userRepository);
+    });
+    tearDown(() {
+      bloc?.close();
+    });
+    test('should assert if `userRepository` is null', () {
+      expect(() => LoginBloc(userRepository: null), throwsA(isAssertionError));
+    });
+    test('initial state is correct', () {
+      expect(
+          LoginState.initial(),
+          LoginState(
+            isEmailValid: true,
+            isPasswordValid: true,
+            isSubmitting: false,
+            isSuccess: false,
+            isFailure: false,
+          ));
+    });
     blocTest(
-        'streams the correct states when email changes and the email is valid',
-        build: () {
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(LoginEmailChanged(email: 'email@example.com')),
-        expect: [
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.initial().update(isEmailValid: true),
-        ]);
-    /*
-   * outputs the right states in the right order when LoginEmailChanged
-   * event is added, but the email is not valid. email has to take 'email@example.com'
-   * format
-   * */
-    blocTest(
-        'streams the correct states when email changes and the email is invalid',
-        build: () {
-      when(validator.getIsValidEmail('email')).thenReturn(false);
+      'adding nothing does not emit any states',
+      build: () => Future.value(bloc),
+      expect: [],
+    );
+    blocTest('close does not emit new states', build: () {
       return Future.value(bloc);
     }, act: (bloc) {
-      return bloc.add(LoginEmailChanged(email: 'email@'));
-    }, expect: [
-      //LoginState.initial(),
-      LoginState.initial().update(isSubmitting: true),
-      LoginState.initial().update(isEmailValid: false),
-    ]);
+      return bloc?.close();
+    }, expect: []);
 
-    /*
-    * password is valid. 'password' has at least 5 characters.
-    * */
-    blocTest('streams the right states when password changes and is valid',
-        build: () {
-          when(validator.getIsValidPassword('password')).thenReturn(true);
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(LoginPasswordChanged(password: 'password')),
-        expect: [
-          //LoginState.initial(),
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.initial().update(isPasswordValid: true),
-        ]);
-    /*
-    * password is invalid. password has to have at least 5 characters.
-    * */
-    blocTest('streams the right states when password changes and is invalid',
-        build: () {
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(LoginPasswordChanged(password: 'pap')),
-        expect: [
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.initial().update(isPasswordValid: false)
-        ]);
-    /*
-    * logging in with google succeeds
-    * */
-    blocTest(
-        'streams the right states when LoginWithGooglePressed is added and succeeds',
-        build: () {
-          when(userRepository.signInWithGoogle())
-              .thenAnswer((_) => Future.value());
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(LoginWithGooglePressed()),
-        expect: [
-          //LoginState.initial(),
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.success(),
-        ]);
-    /*
-    * logging in with google fails
-    //TODO: mocking a future error is causing problems
-    * */
-    blocTest(
-        'streams the right states when LoginWithGooglePressed is added and fails',
-        build: () {
-          when(userRepository.signInWithGoogle())
-              .thenAnswer((_) => Future.error('error'));
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(LoginWithGooglePressed()),
-        expect: [
-          // LoginState.initial(),
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.failure(),
-        ]);
-    /*
-    * LoginWithCredentials succeeds
-    * */
-    blocTest(
-        'streams the right states when LoginWithCredentials is added and succeeds',
-        build: () {
-          when(userRepository.signInWithCredentials(
-                  email: 'email', password: 'password'))
-              .thenAnswer((realInvocation) => Future.value());
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(
-            LoginWithCredentialsPressed(email: 'email', password: 'password')),
-        expect: [
-          //LoginState.initial(),
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.success(),
-        ]);
-    /*
-    * LoginWithCredentials fails
-    * */
-    blocTest(
-        'streams the right states when LoginWithCredentials is added and fails',
-        build: () {
-          when(userRepository.signInWithCredentials(
-                  email: 'email', password: 'password'))
-              .thenAnswer((realInvocation) => Future.error('fails'));
-          /*userRepository
-              .signInWithCredentials(email: 'email', password: 'password')
-              .catchError((e) {
-            //do nothing
-          });*/
-          return Future.value(bloc);
-        },
-        act: (bloc) => bloc.add(
-            LoginWithCredentialsPressed(email: 'email', password: 'password')),
-        expect: [
-          //LoginState.initial(),
-          LoginState.initial().update(isSubmitting: true),
-          LoginState.failure(),
-        ]);
+    group('LoginEmailChanged', () {
+      ////emits [LoginState.initial, LoginState.initial.update]
+      // when LoginEmailChanged is added and Validators.isEmailValid return true
+      blocTest('valid email',
+          build: () {
+            return Future.value(bloc);
+          },
+          act: (bloc) =>
+              bloc.add(LoginEmailChanged(email: 'email@example.com')),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.initial().update(isEmailValid: true),
+          ]);
+
+      ///emits [ LoginState.initial().update(isSubmitting: true),
+      ///LoginState.initial().update(isEmailValid: false)]
+      /// when LoginEmailChanged is added and Validators.isEmailValid return false
+      blocTest('invalid email. Email has to take email@example.com', build: () {
+        return Future.value(bloc);
+      }, act: (bloc) {
+        return bloc.add(LoginEmailChanged(email: 'email@'));
+      }, expect: [
+        LoginState.initial().update(isSubmitting: true),
+        LoginState.initial().update(isEmailValid: false),
+      ]);
+    });
+    group('LoginPasswordChanged', () {
+      ///emits [`LoginState.initial().update(isSubmitting: true)`,
+      ///`LoginState.initial().update(isPasswordValid: true)`]
+      ///when LoginPasswordChanged is added and `Validators.isPasswordValid` returns true
+      blocTest('Password is valid. Password has at least 5 characters',
+          build: () {
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginPasswordChanged(password: 'password')),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.initial().update(isPasswordValid: true),
+          ]);
+
+      ///emits `[LoginState.initial().update(isSubmitting: true)`,
+      ///`LoginState.initial().update(isPasswordValid: true)`]
+      /// when LoginPasswordChanged is added and `Validators.isPasswordValid` returns false
+      blocTest(
+          'Password is invalid. Password has to have at least 5 characters',
+          build: () {
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginPasswordChanged(password: 'pap')),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.initial().update(isPasswordValid: false)
+          ]);
+    });
+
+    group('LoginWithGoogle', () {
+      ///emits [LoginState.initial().update(isSubmitting:true), LoginState.success()]
+      /// when LoginWithGooglePressed is added and succeeds
+      blocTest('Logging in with google succeeds',
+          build: () {
+            when(userRepository.signInWithGoogle())
+                .thenAnswer((_) => Future.value());
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginWithGooglePressed()),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.success(),
+          ]);
+
+      ///emits `[LoginState.initial().update(isSubmitting: true),LoginState.failure()]`
+      /// when `LoginWithGoogle` is added and fails
+      blocTest('Logging in with google fails',
+          build: () {
+            when(userRepository.signInWithGoogle())
+                .thenAnswer((_) => Future.error('error'));
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginWithGooglePressed()),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.failure(),
+          ]);
+    });
+    group('LoginWithCredentials', () {
+      ///emits `[LoginState.initial().update(isSubmitting: true),LoginState.success()]`
+      ///when LoginWithCredentials is added and succeeds
+      blocTest('Logging in with credentials succeeds',
+          build: () {
+            when(userRepository.signInWithCredentials(
+                    email: 'email', password: 'password'))
+                .thenAnswer((realInvocation) => Future.value());
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginWithCredentialsPressed(
+              email: 'email', password: 'password')),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.success(),
+          ]);
+
+      ///emits `[LoginState.initial().update(isSubmitting: true),LoginState.failure()]`
+      /// when LoginWithCredentials is added and fails
+      blocTest('Logging in with credentials fails',
+          build: () {
+            when(userRepository.signInWithCredentials(
+                    email: 'email', password: 'password'))
+                .thenAnswer((realInvocation) => Future.error('fails'));
+            return Future.value(bloc);
+          },
+          act: (bloc) => bloc.add(LoginWithCredentialsPressed(
+              email: 'email', password: 'password')),
+          expect: [
+            LoginState.initial().update(isSubmitting: true),
+            LoginState.failure(),
+          ]);
+    });
   });
 }

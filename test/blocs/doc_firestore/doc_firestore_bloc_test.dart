@@ -1,6 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:doctracking/src/blocs/doc_firestore/doc_firestore.dart';
-import 'package:doctracking/src/blocs/login/bloc/login.dart';
 import 'package:doctracking/src/models/doc.dart';
 import 'package:doctracking/src/repository/doc_repo/doc_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,10 +9,11 @@ class DocRepositoryMock extends Mock implements DocRepository {}
 
 void main() {
   DocFirestoreBloc bloc;
-  DocRepositoryMock repository;
+  DocRepositoryMock docRepository;
+
   setUp(() {
-    repository = DocRepositoryMock();
-    bloc = DocFirestoreBloc(repository: repository);
+    docRepository = DocRepositoryMock();
+    bloc = DocFirestoreBloc(repository: docRepository);
   });
   tearDown(() {
     bloc?.close();
@@ -32,7 +32,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreSave is added and succeeds',
         build: () {
-      when(repository.addDocument(doc: doc))
+      when(docRepository.addDocument(doc: doc))
           .thenAnswer((realInvocation) => Future.value());
       return Future.value(bloc);
     }, act: (bloc) {
@@ -40,10 +40,10 @@ void main() {
     }, expect: [DocFirestoreLoading(), DocFirestoreSuccess()]);
     blocTest('streams correct states when DocFirestoreSave is added but fails',
         build: () {
-      when(repository.addDocument(doc: null))
+      when(docRepository.addDocument(doc: null))
           .thenThrow((_) async => throw 'add doc failed');
 
-      return Future.value(LoginBloc(userRepository: userRepository));
+      return Future.value(bloc);
     }, act: (bloc) {
       return bloc.add(DocFirestoreSave(doc: null));
     }, expect: [
@@ -53,7 +53,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreDelete is added and succeeds',
         build: () {
-      when(repository.deleteDocument(title: doc.title))
+      when(docRepository.deleteDocument(title: doc.title))
           .thenAnswer((realInvocation) => Future.value());
       return Future.value(bloc);
     }, act: (bloc) {
@@ -62,7 +62,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreDelete is added and fails',
         build: () {
-      when(repository.deleteDocument(title: null))
+      when(docRepository.deleteDocument(title: null))
           .thenThrow((_) async => throw "delete doc failed");
       return Future.value(bloc);
     }, act: (bloc) {
@@ -74,7 +74,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreDeleteAll is added and succeeds',
         build: () {
-      when(repository.deleteAll())
+      when(docRepository.deleteAll())
           .thenAnswer((realInvocation) => Future.value());
       return Future.value(bloc);
     }, act: (bloc) {
@@ -83,7 +83,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreDeleteAll is added and fails',
         build: () {
-      when(repository.deleteAll())
+      when(docRepository.deleteAll())
           .thenThrow(() async => throw 'delete all docs failed');
       return Future.value(bloc);
     }, act: (bloc) {
@@ -95,7 +95,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreFetchAll is added and succeeds',
         build: () {
-      when(repository.getAllDocuments())
+      when(docRepository.getAllDocuments())
           .thenAnswer((realInvocation) => Future.value());
       return Future.value(bloc);
     }, act: (bloc) {
@@ -104,7 +104,7 @@ void main() {
     blocTest(
         'streams correct states when DocFirestoreFetchAll is added and fails',
         build: () {
-      when(repository.getAllDocuments())
+      when(docRepository.getAllDocuments())
           .thenThrow(() async => throw 'fetch all docs failed');
 
       return Future.value(bloc);

@@ -7,10 +7,10 @@ class UserClientRepository {
   final GoogleSignIn _googleSignIn;
 
   /*
-  *this ?? is possible 'cause variables in dart are initialized as null
-  *cause they are all objects.  here, if they are not injected, then we instantiate
+  *`??` is possible 'cause variables in dart are initialized as null.
+  *  Here, if dependencies are not injected, then we instantiate
   *them ourselves. This configuration, as opposed to just creating new instances right
-  *here and now allows to inject mock dependencies to test things. so its good practice.
+  *here allows to inject mock dependencies to test this class. This is good practice.
   * */
   UserClientRepository({FirebaseAuth firebaseAuth, GoogleSignIn googleSignIn})
       : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
@@ -38,9 +38,13 @@ class UserClientRepository {
 
   Future<FirebaseUser> signUp(
       {@required String email, @required String password}) async {
-    await _firebaseAuth.createUserWithEmailAndPassword(
-        email: email, password: password);
-    return _firebaseAuth.currentUser();
+    try {
+      await _firebaseAuth.createUserWithEmailAndPassword(
+          email: email, password: password);
+      return _firebaseAuth.currentUser();
+    } catch (error) {
+      return error;
+    }
   }
 
   Future<void> signOut() async {
