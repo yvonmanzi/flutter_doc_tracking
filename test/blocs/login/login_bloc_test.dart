@@ -24,14 +24,9 @@ void main() {
     });
     test('initial state is correct', () {
       expect(
-          LoginState.initial(),
-          LoginState(
-            isEmailValid: true,
-            isPasswordValid: true,
-            isSubmitting: false,
-            isSuccess: false,
-            isFailure: false,
-          ));
+        bloc.state,
+        LoginState.initial(),
+      );
     });
     blocTest(
       'adding nothing does not emit any states',
