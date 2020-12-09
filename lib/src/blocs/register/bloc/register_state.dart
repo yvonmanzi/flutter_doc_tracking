@@ -1,6 +1,15 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
+/*
+* Testing is super useful. It allows you to see
+* errors that you might have no idea what's causing them.
+* For example, I had forgotten to extend `Equatable` here.
+* As a result, there was no way Bloc library could compare
+* states of the `RegisterState` type. But testing allows me to
+* catch that quite instantly.
+* */
 
-class RegisterState {
+class RegisterState extends Equatable {
   final bool isEmailValid;
   final bool isPasswordValid;
   final bool isSubmitting;
@@ -94,4 +103,8 @@ class RegisterState {
       isFailure: $isFailure,
     }''';
   }
+
+  @override
+  List<Object> get props =>
+      [isEmailValid, isPasswordValid, isSubmitting, isSuccess, isFailure];
 }
