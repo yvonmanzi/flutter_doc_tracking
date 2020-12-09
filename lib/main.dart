@@ -18,10 +18,8 @@ void main() {
       UserRepository(userClientRepository: UserClientRepository());
 
   runApp(BlocProvider<AuthenticationBloc>(
-    /*
-    * Create the authentication bloc,
-    * and instantly add an event(AuthenticationAppStarted)
-    * */
+    ///Create `AuthenticationBloc`,
+    /// and instantly add `AuthenticationAppStarted` event.
     create: (context) => AuthenticationBloc(userRepository: userRepository)
       ..add(AuthenticationAppStarted()),
     child: MaterialApp(

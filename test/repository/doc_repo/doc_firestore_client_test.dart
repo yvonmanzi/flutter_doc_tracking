@@ -16,35 +16,47 @@ class QuerySnapshotMock extends Mock implements QuerySnapshot {}
 
 class DocumentReferenceMock extends Mock implements DocumentReference {}
 
-class MockDocFirestoreClient extends Mock implements DocFirestoreClient {
-  DocFirestoreClient _real;
-  FirebaseUser _user;
+//TODO: This just taught me something about how i am going to deal with Validators class
+class DocumentSnapshotMock extends Mock implements DocumentSnapshot {
+  final String documentID;
+  final Map<String, dynamic> data;
 
-  MockDocFirestoreClient(FirebaseUser user, Firestore firestoreInstance) {
-    _real =
-        DocFirestoreClient(user: _user, firestoreInstance: firestoreInstance);
-    var doc = Doc(
-        title: 'passport_test',
-        notifyAtHalfYearMark: 1,
-        notifyAtMonthMark: 1,
-        notifyAtOneYearMark: 1,
-        notifyAtQuarterMark: 1,
-        expiration: '2021');
-    when(addDocument(doc: doc)).thenAnswer((_) => _real.addDocument(doc: doc));
-  }
+  DocumentSnapshotMock(this.documentID, this.data);
 }
 
 void main() {
-  final firestoreInstance = FirestoreMock();
-  final firebaseUser = FirebaseUserMock();
-  final querySnapshot = QuerySnapshotMock();
-  final collectionRef = CollectionReferenceMock();
-  group('should assert if at least one of the args is null', () {
-    test(' should assert if user is null', () {
-      expect(
-        () => DocFirestoreClient(firestoreInstance: null, user: null),
-        throwsA(isAssertionError),
-      );
+  group('DocFirestoreInstance', () {
+    FirestoreMock firestoreInstance;
+    FirebaseUserMock firebaseUser;
+    QuerySnapshotMock querySnapshot;
+    CollectionReferenceMock collectionRef;
+    DocumentReferenceMock documentRef;
+    DocFirestoreClient docFirestoreClient;
+    Doc doc;
+
+    setUp(() {
+      firestoreInstance = FirestoreMock();
+      firebaseUser = FirebaseUserMock();
+      querySnapshot = QuerySnapshotMock();
+      collectionRef = CollectionReferenceMock();
+      documentRef = DocumentReferenceMock();
+      docFirestoreClient = DocFirestoreClient(
+          firestoreInstance: firestoreInstance, user: firebaseUser);
+      doc = Doc(
+          title: 'passport_test',
+          notifyAtHalfYearMark: 1,
+          notifyAtMonthMark: 1,
+          notifyAtOneYearMark: 1,
+          notifyAtQuarterMark: 1,
+          expiration: '2021');
+    });
+    group('should assert if at least one of the args is null', () {
+      test(' should assert if user is null', () {
+        expect(
+          () => DocFirestoreClient(firestoreInstance: null, user: null),
+          throwsA(isAssertionError),
+        );
+      });
       test('should assert if firestoreInstance is null', () {
         expect(
             () => DocFirestoreClient(
@@ -52,59 +64,127 @@ void main() {
             throwsA(isAssertionError));
       });
     });
-  });
 
-  group('addDocument', () async {
-    final mockFirestoreInstance = FirestoreMock();
-    final mockDocFirestoreClient =
-        MockDocFirestoreClient(mockFirestoreInstance);
-    test('return nothing if no error was returned', () async {
-      final String title = 'passport_test';
-      final String expiration = '2021';
-      final mockDoc = Doc(title: title, expiration: expiration);
+    /// Test `addDocument`
+    group('addDocument', () {
+      test('returns title if add doc succeeds', () async {
+        final String title = 'passport_test';
+        final doc = Doc(
+            title: 'passport_test',
+            notifyAtHalfYearMark: 1,
+            notifyAtMonthMark: 1,
+            notifyAtOneYearMark: 1,
+            notifyAtQuarterMark: 1,
+            expiration: '2021');
+        final data = doc.toMap();
+        when(firestoreInstance.collection('${firebaseUser.uid}'))
+            .thenReturn(collectionRef);
+        when(collectionRef.document('${doc.title.toLowerCase()}'))
+            .thenReturn(documentRef);
+        when(documentRef.setData(data))
+            .thenAnswer((realInvocation) => Future.value());
 
-      when(mockDocFirestoreClient.addDocument(
-              title: title, expiration: expiration))
-          .thenAnswer((_) async => Future.value(title));
-
-      expect(
-          await mockDocFirestoreClient.addDocument(
-              title: 'passport_test', expiration: '2021'),
-          title);
+        expect(await docFirestoreClient.addDocument(doc: doc), title);
+      });
     });
-  });
 
-  group('deleteDocument', () async {
-    final mockFirestoreInstance = FirestoreMock();
-    final mockDocFirestoreClient =
-        MockDocFirestoreClient(mockFirestoreInstance);
-    test('return title if deletion succeeds', () async {
-      final String title = 'passport_test';
-      when(mockDocFirestoreClient.deleteDocument(title: title))
-          .thenAnswer((_) async => Future.value(title));
+    /// Test `deleteDocument`
+    group('deleteDocument', () {
+      test('returns title if deletion succeeds', () async {
+        final String title = 'passport_test';
 
-      expect(
-          await mockDocFirestoreClient.deleteDocument(title: 'passport_test'),
-          title);
+        final doc = Doc(
+            title: 'passport_test',
+            notifyAtHalfYearMark: 1,
+            notifyAtMonthMark: 1,
+            notifyAtOneYearMark: 1,
+            notifyAtQuarterMark: 1,
+            expiration: '2021');
+        final snapshots = List<DocumentSnapshotMock>()
+          ..add(DocumentSnapshotMock('1', doc.toMap()));
+        when(firestoreInstance.collection('${firebaseUser.uid}'))
+            .thenReturn(collectionRef);
+        when(collectionRef.getDocuments())
+            .thenAnswer((_) => Future.value(querySnapshot));
+        when(querySnapshot.documents).thenReturn(snapshots);
+        when(collectionRef.document('${doc.title}')).thenReturn(documentRef);
+        when(documentRef.delete()).thenAnswer((_) => Future.value());
+
+        expect(
+            await docFirestoreClient.deleteDocument(title: title), doc.title);
+      });
     });
-  });
 
-  group('fetchAllDocuments', () async {
-    //TODO: would thenAsnwer work too?
-    when(firestoreInstance.collection('path')).thenReturn(collectionRef);
-    expect(await collectionRef.getDocuments().isEmpty(), true);
+    /// Test `getAllDocuments`
+    group('getAllDocs', () {
+      final doc = Doc(
+          title: 'passport_test',
+          notifyAtHalfYearMark: 1,
+          notifyAtMonthMark: 1,
+          notifyAtOneYearMark: 1,
+          notifyAtQuarterMark: 1,
+          expiration: '2021');
 
-    MockDocFirestoreClient(mockFirestoreInstance);
-    test('return a list of docs when it succeeds', () async {
-      List<Doc> documents;
-      while (documents.length > 5)
-        documents.add(Doc(title: 'passport_test', expiration: '2021'));
+      test('it is empty when there are no documents', () async {
+        when(firestoreInstance.collection('${firebaseUser.uid}'))
+            .thenReturn(collectionRef);
+        when(collectionRef.getDocuments())
+            .thenAnswer((realInvocation) => Future.value(querySnapshot));
+        final snapshots = List<DocumentSnapshotMock>();
+        when(querySnapshot.documents).thenReturn(snapshots);
 
-      when(mockDocFirestoreClient.getAllDocs())
-          .thenAnswer((_) async => Future.value(documents));
+        expect(
+            await docFirestoreClient
+                .getAllDocs()
+                .then((docList) => docList.isEmpty),
+            true);
+      });
+      test('returns a list of docs when there exist some docs', () async {
+        when(firestoreInstance.collection('${firebaseUser.uid}'))
+            .thenReturn(collectionRef);
+        when(collectionRef.getDocuments())
+            .thenAnswer((realInvocation) => Future.value(querySnapshot));
 
-      expect(await mockDocFirestoreClient.getAllDocs(), documents);
+        final snapshots = List<DocumentSnapshotMock>()
+          ..add(DocumentSnapshotMock('1', doc.toMap()));
+        snapshots.add(DocumentSnapshotMock('2', doc.toMap()));
+        when(querySnapshot.documents).thenReturn(snapshots);
+        expect(await docFirestoreClient.getAllDocs().then((docList) => docList),
+            [doc, doc]);
+      });
+      /*test('return a list of docs when it succeeds', () async {
+        List<Doc> documents;
+        while (documents.length > 5)
+          documents.add(Doc(
+              title: 'passport_test',
+              notifyAtHalfYearMark: 1,
+              notifyAtMonthMark: 1,
+              notifyAtOneYearMark: 1,
+              notifyAtQuarterMark: 1,
+              expiration: '2021'));
+
+        when(docFirestoreClient.getAllDocs())
+            .thenAnswer((_) async => Future.value(documents));
+
+        expect(await docFirestoreClient.getAllDocs(), documents);*/
+    });
+
+    /// Test `deleteAll`
+    group('deleteAll', () {
+      test('returns nothing when deletion succeeds', () async {
+        when(firestoreInstance.collection('${firebaseUser.uid}'))
+            .thenReturn(collectionRef);
+        when(collectionRef.getDocuments())
+            .thenAnswer((realInvocation) => Future.value(querySnapshot));
+        final snapshots = List<DocumentSnapshotMock>()
+          ..add(DocumentSnapshotMock('1', doc.toMap()));
+        snapshots.add(DocumentSnapshotMock('2', doc.toMap()));
+        when(querySnapshot.documents).thenReturn(snapshots);
+        when(collectionRef.document('${doc.title}')).thenReturn(documentRef);
+        when(documentRef.delete()).thenAnswer((_) => Future.value([doc, doc]));
+
+        expect(await docFirestoreClient.deleteAll(), [doc, doc]);
+      });
     });
   });
 }
-//TODO: WRITE MORE TESTS

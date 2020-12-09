@@ -8,12 +8,10 @@ class DocFirestoreClient {
   final Firestore _firestoreInstance;
   final FirebaseUser _user;
 
-  DocFirestoreClient(
-      {@required FirebaseUser user, @required Firestore firestoreInstance})
-      : assert(firestoreInstance != null),
-        assert(user != null),
+  DocFirestoreClient({@required FirebaseUser user, Firestore firestoreInstance})
+      : assert(user != null),
         _user = user,
-        _firestoreInstance = firestoreInstance;
+        _firestoreInstance = firestoreInstance ?? Firestore.instance;
 
   //turns out the shortcut is to use current user's uuid. same idea of hashing password,
   //but google does that for us automatically. might be worth the effort to checkout some
@@ -29,15 +27,14 @@ class DocFirestoreClient {
 
   Future<String> deleteDocument({@required String title}) async {
     var collectionRef = _firestoreInstance.collection('${_user.uid}');
-    await collectionRef
-        .document('${title.toLowerCase()}')
-        .snapshots()
-        .forEach((doc) {
-      if (doc['title'] == title.toLowerCase()) {
-        collectionRef.document('${title.toLowerCase()}').delete();
-        return;
-      }
-    });
+    await collectionRef.getDocuments().then(
+        (QuerySnapshot snapshot) => snapshot.documents.forEach((document) {
+              if (document.data['title'] == title.toLowerCase()) {
+                collectionRef.document('${title.toLowerCase()}').delete();
+              } else {
+                return null;
+              }
+            }));
     return title;
   }
 
@@ -47,20 +44,17 @@ class DocFirestoreClient {
         .getDocuments()
         .then((QuerySnapshot snapshot) =>
             snapshot.documents.map((doc) => Doc.fromMap(doc.data)).toList());
-    print('we did it: ${list.length}, ${list[0].title}');
     return list;
   }
 
-  Future<void> deleteAll() async {
+  Future<List<Doc>> deleteAll() async {
     var collectionRef = _firestoreInstance.collection('${_user.uid}');
-    try {
-      return await collectionRef
-          .getDocuments()
-          .then((snapshot) => snapshot.documents.forEach((doc) {
-                collectionRef.document('${doc.documentID}').delete();
-              }));
-    } catch (error) {
-      print('an error happened${error.toString()}');
-    }
+    var list = List<Doc>();
+    await collectionRef.getDocuments().then(
+        (QuerySnapshot snapshot) => snapshot.documents.forEach((document) {
+              list.add(Doc.fromMap(document.data));
+              collectionRef.document('${document.data['title']}').delete();
+            }));
+    return list;
   }
 }

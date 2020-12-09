@@ -26,9 +26,6 @@ class UserClientRepository {
     return _firebaseAuth.currentUser();
   }
 
-// TODO: devise a better way to handle errors:
-  // As it turns out, it wouldn't be such a good idea
-  // to handle errors here. we could just handle em in blocs.
   Future<FirebaseUser> signInWithCredentials(
       {@required String email, @required String password}) async {
     await _firebaseAuth.signInWithEmailAndPassword(
@@ -38,13 +35,9 @@ class UserClientRepository {
 
   Future<FirebaseUser> signUp(
       {@required String email, @required String password}) async {
-    try {
-      await _firebaseAuth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      return _firebaseAuth.currentUser();
-    } catch (error) {
-      return error;
-    }
+    await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email, password: password);
+    return _firebaseAuth.currentUser();
   }
 
   Future<void> signOut() async {
