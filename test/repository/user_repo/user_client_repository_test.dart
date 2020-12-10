@@ -27,7 +27,9 @@ void main() {
     GoogleSignInAccountMock googleSignInAccount;
     AuthResultMock authResult;
 
-    // Use `setup` to initialize dependencies before every test
+    /// Use `setup` to initialize dependencies before every test gets run.
+    /// This way, tests don't cause unexpected behaviors by executing from
+    /// different starting points. Clean slate.
     setUp(() {
       firebaseAuth = FirebaseAuthMock();
       googleSignIn = GoogleSignInMock();
@@ -39,9 +41,10 @@ void main() {
       authResult = AuthResultMock();
     });
 
+    /// Test `signInWithGoogle`
     group("signInWithGoogle", () {
       test('signing in with google returns firebase user', () async {
-        //mock methods that apply to all the group
+        /// Mock method calls
         when(googleSignIn.signIn()).thenAnswer(
             (_) => Future<GoogleSignInAccountMock>.value(googleSignInAccount));
         when(googleSignInAccount.authentication).thenAnswer((_) =>
@@ -55,45 +58,42 @@ void main() {
         verify(googleSignIn.signIn()).called(1);
         verify(googleSignInAccount.authentication).called(1);
       });
+      test('throws error when signInWithGoogle fails', () async {
+        /// Mock method calls
+        when(googleSignIn.signIn()).thenAnswer(
+            (_) => Future<GoogleSignInAccountMock>.value(googleSignInAccount));
+        when(googleSignInAccount.authentication).thenAnswer((_) =>
+            Future<GoogleSignInAuthenticationMock>.error(
+                'Error with authentication'));
+        expect(() async => await userClientRepository.signInWithGoogle(),
+            throwsA('Error with authentication'));
+        //verify these methods were called only once.
+        //verify(googleSignIn.signIn()).called(1);
+        //verify(googleSignInAccount.authentication).called(1);
+      });
     });
 
-    /*
-            *
-            * */
+    /// Test `signUp`
     group('signUp', () {
       test('returns `currentFirebaseUser`if `signUp` succeeds', () async {
         final email = 'email@example.com';
         final password = 'password';
-// Mock the method call
+
+        /// Mock method calls
         when(firebaseAuth.createUserWithEmailAndPassword(
                 email: email, password: password))
             .thenAnswer((_) => Future.value(authResult));
         when(firebaseAuth.currentUser()).thenAnswer(
             (_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
 
-// Call the method and expect `currentFirebaseUser` to be returned.
+        /// Call the method and expect `currentFirebaseUser` to be returned.
         expect(
             await userClientRepository.signUp(email: email, password: password),
             currentFirebaseUser);
       });
-
-      test('throws `ArgumentError`if `signUp` fails', () async {
-        final email = 'wrong_email.com';
-        final password = 'password';
-// Mock the method call
-        when(firebaseAuth.createUserWithEmailAndPassword(
-                email: email, password: password))
-            .thenAnswer(
-                (_) => Future<AuthResultMock>.error('error signing up'));
-// Call the method and expect `currentFirebaseUser` to be returned.
-        //expect(
-        //await userClientRepository.signUp(email: email, password: password),
-        //throwsA(Future<AuthResultMock>.error('error signing up')));
-      });
     });
-    /*
-          *
-          * */
+
+    /// Test `signInWithCredentials`
     group('signInWithCredentials', () {
       test('signing in with credentials returns a Firebase user', () async {
         final email = 'email@example.com';
@@ -112,23 +112,16 @@ void main() {
       });
     });
 
-/*
-
-* */
+    /// Test `isSignedIn`
     group('isSignedIn', () {
-      test(
-          'is signed in returns true iff FirebaseAuth has a user.'
-          ' Otherwise returns false', () async {
+      test('is signed in returns true iff FirebaseAuth has a user.', () async {
         when(firebaseAuth.currentUser()).thenAnswer(
             (_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
         expect(await userClientRepository.isSignedIn(), true);
-
-        //expect(await userClientRepository.isSignedIn(), false);
       });
     });
     group('getUser', () {
       test('get user returns the current firebase user', () async {
-        //expect(await userClientRepository.getUser(), null);
         when(firebaseAuth.currentUser()).thenAnswer(
             (_) => Future<FirebaseUserMock>.value(currentFirebaseUser));
         expect(await userClientRepository.getUser(), currentFirebaseUser);

@@ -1,57 +1,104 @@
 import 'package:doctracking/src/repository/user_repo/user_client_repository.dart';
 import 'package:doctracking/src/repository/user_repo/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 class UserClientRepositoryMock extends Mock implements UserClientRepository {}
 
+class FirebaseUserMock extends Mock implements FirebaseUser {}
+
 void main() {
-  final UserClientRepositoryMock userClientRepository =
-      UserClientRepositoryMock();
-  final UserRepository userRepository =
-      UserRepository(userClientRepository: userClientRepository);
-  test('assert if null', () {
-    expect(() => UserRepository(userClientRepository: null),
-        throwsA(isAssertionError));
-  });
-  group('User repository', () {
+  group('UserRepository', () {
+    UserClientRepositoryMock userClientRepository;
+    UserRepository userRepository;
+    FirebaseUserMock firebaseUser;
     final email = 'email@example.com';
     final password = 'password';
-    test('should call sign in with google from UserClientRepository', () {
-      when(userRepository.signInWithGoogle())
-          .thenAnswer((realInvocation) => Future.value());
-      userRepository.signInWithGoogle();
-      verify(userRepository.signInWithGoogle()).called(1);
-    });
-    test('should call signWithCredentials from UserClientRepository', () {
-      when(userRepository.signInWithCredentials(
-          email: email, password: password));
-
-      userRepository.signInWithCredentials(email: email, password: password);
-
-      verify(userRepository.signInWithCredentials(
-              email: email, password: password))
-          .called(1);
-    });
-    test('should call signUp UserClientRepository', () {
-      when(userRepository.signUp(email: email, password: password))
-          .thenAnswer((realInvocation) => Future.value());
-      userRepository.signUp(email: email, password: password);
-      verify(userRepository.signUp(email: email, password: password)).called(1);
-    });
-    test('should call signOut from UserClientRepository', () {
-      when(userRepository.signOut())
-          .thenAnswer((realInvocation) => Future.value());
-      userRepository.signOut();
-
-      verify(userRepository.signOut()).called(1);
+    setUp(() {
+      firebaseUser = FirebaseUserMock();
+      userClientRepository = UserClientRepositoryMock();
+      userRepository =
+          UserRepository(userClientRepository: userClientRepository);
+      firebaseUser = FirebaseUserMock();
     });
 
-    test('isSignedIn returns true from UserClientRepository', () {
-      when(userRepository.isSignedIn())
-          .thenAnswer((realInvocation) => Future.value(true));
-      expect(userRepository.isSignedIn(), true);
-      verify(userRepository.isSignedIn()).called(1);
+    test('throws error if userClientRepository is null', () {
+      expect(() => UserRepository(userClientRepository: null),
+          throwsA(isAssertionError));
+    });
+
+    /// Test `signWithGoogle`
+    group('signWithGoogle', () {
+      test('should call signInWithGoogle from UserClientRepository', () async {
+        when(userClientRepository.signInWithGoogle())
+            .thenAnswer((realInvocation) => Future.value(firebaseUser));
+        expect(await userRepository.signInWithGoogle(), firebaseUser);
+      });
+    });
+
+    /// Test `signWithCredentials`
+    group('signWithCredentials', () {
+      test('should call signWithCredentials from UserClientRepository',
+          () async {
+        when(userClientRepository.signInWithCredentials(
+                email: email, password: password))
+            .thenAnswer((realInvocation) => Future.value(firebaseUser));
+
+        expect(
+            await userRepository.signInWithCredentials(
+                email: email, password: password),
+            firebaseUser);
+        verify(userRepository.signInWithCredentials(
+                email: email, password: password))
+            .called(1);
+      });
+    });
+
+    /// Test `signUp`
+    group('signUp', () {
+      test('should call signUp UserClientRepository', () async {
+        when(userClientRepository.signUp(email: email, password: password))
+            .thenAnswer((realInvocation) => Future.value(firebaseUser));
+
+        expect(await userRepository.signUp(email: email, password: password),
+            firebaseUser);
+        verify(userRepository.signUp(email: email, password: password))
+            .called(1);
+      });
+    });
+
+    /// Test `signOut`
+    group('signOut', () {
+      test(
+          'calls signOut from UserClientRepository and returns current firebaseUser',
+          () async {
+        when(userClientRepository.signOut())
+            .thenAnswer((realInvocation) => Future.value(firebaseUser));
+        expect(await userRepository.signOut(), firebaseUser);
+
+        verify(userRepository.signOut()).called(1);
+      });
+    });
+
+    /// Test `isSignedIn`
+    group('isSignedIn', () {
+      test(
+          'isSignedIn returns true from UserClientRepository if a user is signed in',
+          () async {
+        when(userClientRepository.isSignedIn())
+            .thenAnswer((realInvocation) => Future.value(true));
+        expect(await userRepository.isSignedIn(), true);
+        verify(userRepository.isSignedIn()).called(1);
+      });
+      test(
+          'isSignedIn returns false from UserClientRepository if no user is signed in',
+          () async {
+        when(userClientRepository.isSignedIn())
+            .thenAnswer((realInvocation) => Future.value(false));
+        expect(await userRepository.isSignedIn(), false);
+        verify(userRepository.isSignedIn()).called(1);
+      });
     });
   });
 }

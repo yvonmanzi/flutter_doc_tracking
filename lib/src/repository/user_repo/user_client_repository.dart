@@ -23,32 +23,34 @@ class UserClientRepository {
     final AuthCredential credential = GoogleAuthProvider.getCredential(
         idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
     await _firebaseAuth.signInWithCredential(credential);
-    return _firebaseAuth.currentUser();
+    return getUser();
   }
 
   Future<FirebaseUser> signInWithCredentials(
       {@required String email, @required String password}) async {
     await _firebaseAuth.signInWithEmailAndPassword(
         email: email, password: password);
-    return _firebaseAuth.currentUser();
+    return getUser();
   }
 
   Future<FirebaseUser> signUp(
       {@required String email, @required String password}) async {
     await _firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
-    return _firebaseAuth.currentUser();
+    return getUser();
   }
 
-  Future<void> signOut() async {
-    return Future.wait([
+  Future<FirebaseUser> signOut() async {
+    final user = await getUser();
+    Future.wait([
       _firebaseAuth.signOut(),
       _googleSignIn.signOut(),
     ]);
+    return user;
   }
 
   Future<bool> isSignedIn() async {
-    final currentUser = await _firebaseAuth.currentUser();
+    final currentUser = await getUser();
     return currentUser != null;
   }
 

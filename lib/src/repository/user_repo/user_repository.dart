@@ -19,12 +19,12 @@ class UserRepository {
         email: email, password: password);
   }
 
-  Future<void> signUp(
+  Future<FirebaseUser> signUp(
       {@required String email, @required String password}) async {
     return await _userClientRepository.signUp(email: email, password: email);
   }
 
-  Future<void> signOut() async {
+  Future<FirebaseUser> signOut() async {
     return await _userClientRepository.signOut();
   }
 
