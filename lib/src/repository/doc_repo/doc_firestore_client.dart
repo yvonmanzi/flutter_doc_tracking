@@ -13,9 +13,19 @@ class DocFirestoreClient {
         _user = user,
         _firestoreInstance = firestoreInstance ?? Firestore.instance;
 
-  //turns out the shortcut is to use current user's uuid. same idea of hashing password,
-  //but google does that for us automatically. might be worth the effort to checkout some
-  // mechanism behind google's hashing algorithm.
+  /*turns out the shortcut is to use current user's uuid. same idea of hashing password,
+  but google does that for us automatically. might be worth the effort to checkout some
+  mechanism behind google's hashing algorithm.*/
+
+  /// Add document to the db
+  ///
+  /// Arguments
+  ///
+  /// * `doc` - document to be added to the db
+  ///
+  /// Returns
+  ///
+  /// * `doc.title` - the title of the document just added to the db
   Future<String> addDocument({@required Doc doc}) async {
     final data = doc.toMap();
     await _firestoreInstance
@@ -25,6 +35,15 @@ class DocFirestoreClient {
     return doc.title;
   }
 
+  /// Delete a document from the db
+  ///
+  /// Arguments
+  ///
+  /// * `title` - a title of the document to be deleted
+  ///
+  /// Returns
+  ///
+  /// * `title` - a title of the deleted document
   Future<String> deleteDocument({@required String title}) async {
     var collectionRef = _firestoreInstance.collection('${_user.uid}');
     await collectionRef.getDocuments().then(
@@ -38,6 +57,11 @@ class DocFirestoreClient {
     return title;
   }
 
+  /// Get all documents from the db
+  ///
+  /// Returns
+  ///
+  /// * `list` - a list of all documents currently in the database
   Future<List<Doc>> getAllDocs() async {
     List<Doc> list = await _firestoreInstance
         .collection('${_user.uid}')
@@ -47,6 +71,11 @@ class DocFirestoreClient {
     return list;
   }
 
+  /// Delete all documents in the db
+  ///
+  /// Returns
+  ///
+  /// * `list` - a list of all deleted documents
   Future<List<Doc>> deleteAll() async {
     var collectionRef = _firestoreInstance.collection('${_user.uid}');
     var list = List<Doc>();

@@ -16,7 +16,7 @@ class QuerySnapshotMock extends Mock implements QuerySnapshot {}
 
 class DocumentReferenceMock extends Mock implements DocumentReference {}
 
-//TODO: This just taught me something about how i am going to deal with Validators class
+//TODO: This just taught me something about how I am going to deal with Validators class
 class DocumentSnapshotMock extends Mock implements DocumentSnapshot {
   final String documentID;
   final Map<String, dynamic> data;
